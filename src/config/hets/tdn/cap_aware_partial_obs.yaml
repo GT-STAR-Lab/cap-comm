@@ -1,0 +1,163 @@
+agents:
+  0:
+    id: '000000'
+    terrain_damage: 0.37397248940432937
+  1:
+    id: '000001'
+    terrain_damage: 0.9173188323961536
+  2:
+    id: '000010'
+    terrain_damage: 0.3524687883778914
+  3:
+    id: '000011'
+    terrain_damage: 0.6681172863238197
+  4:
+    id: '000100'
+    terrain_damage: 0.9402402843208829
+  5:
+    id: '000101'
+    terrain_damage: 0.4898261095714668
+  6:
+    id: '000110'
+    terrain_damage: 0.08132265999320021
+  7:
+    id: '000111'
+    terrain_damage: 0.2795128075176917
+  8:
+    id: '001000'
+    terrain_damage: 0.34646269042555045
+  9:
+    id: '001001'
+    terrain_damage: 0.37577062887606794
+  10:
+    id: '001010'
+    terrain_damage: 0.013714646216699156
+  11:
+    id: '001011'
+    terrain_damage: 0.4988756788453528
+  12:
+    id: '001100'
+    terrain_damage: 0.2485502767269535
+  13:
+    id: '001101'
+    terrain_damage: 0.1854453577208105
+  14:
+    id: '001110'
+    terrain_damage: 0.5770213612088798
+  15:
+    id: '001111'
+    terrain_damage: 0.11330007186064117
+  16:
+    id: '010000'
+    terrain_damage: 0.1339106530946007
+  17:
+    id: '010001'
+    terrain_damage: 0.9701706459742371
+  18:
+    id: '010010'
+    terrain_damage: 0.25557140663784983
+  19:
+    id: '010011'
+    terrain_damage: 0.6797254484508903
+  20:
+    id: '010100'
+    terrain_damage: 0.9993739773860267
+  21:
+    id: '010101'
+    terrain_damage: 0.6323552226185696
+  22:
+    id: '010110'
+    terrain_damage: 0.26504752001810283
+  23:
+    id: '010111'
+    terrain_damage: 0.43423751468215543
+  24:
+    id: '011000'
+    terrain_damage: 0.32422017423094807
+  25:
+    id: '011001'
+    terrain_damage: 0.8091575904548871
+  26:
+    id: '011010'
+    terrain_damage: 0.49254497918346063
+  27:
+    id: '011011'
+    terrain_damage: 0.1317429035403911
+  28:
+    id: '011100'
+    terrain_damage: 0.36081600029676597
+  29:
+    id: '011101'
+    terrain_damage: 0.28445791220561023
+  30:
+    id: '011110'
+    terrain_damage: 0.5616969815808294
+  31:
+    id: '011111'
+    terrain_damage: 0.9292866470623657
+  32:
+    id: '100000'
+    terrain_damage: 0.8589147540181247
+  33:
+    id: '100001'
+    terrain_damage: 0.559474623381243
+  34:
+    id: '100010'
+    terrain_damage: 0.872767089493465
+  35:
+    id: '100011'
+    terrain_damage: 0.6161602927459017
+  36:
+    id: '100100'
+    terrain_damage: 0.06734047023980227
+  37:
+    id: '100101'
+    terrain_damage: 0.1788024430353925
+  38:
+    id: '100110'
+    terrain_damage: 0.40218285261352704
+  39:
+    id: '100111'
+    terrain_damage: 0.26391964117661704
+  40:
+    id: '101000'
+    terrain_damage: 0.9638730092603096
+  41:
+    id: '101001'
+    terrain_damage: 0.5492847775401838
+  42:
+    id: '101010'
+    terrain_damage: 0.36675492995058445
+  43:
+    id: '101011'
+    terrain_damage: 0.025407639250087488
+  44:
+    id: '101100'
+    terrain_damage: 0.9759923234170841
+  45:
+    id: '101101'
+    terrain_damage: 0.8584422049339199
+  46:
+    id: '101110'
+    terrain_damage: 0.9844226433260079
+  47:
+    id: '101111'
+    terrain_damage: 0.4786993555535771
+  48:
+    id: '110000'
+    terrain_damage: 0.47186164900999994
+  49:
+    id: '110001'
+    terrain_damage: 0.14741800642306901
+clipped: true
+fully_observed: false
+num_relevant_agents: all
+num_test_candidates: 10
+num_train_candidates: 40
+train: true
+traits:
+  terrain_damage:
+    distribution: uniform
+    high: 1.0
+    low: 0.0
+use_agent_id: false

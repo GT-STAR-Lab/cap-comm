@@ -1,0 +1,13 @@
+clipped: True
+use_agent_id: False
+train: True
+fully_observed: False
+num_relevant_agents: all
+num_test_candidates: 10
+num_train_candidates: 40
+traits:
+  comm_rad:
+    distribution: 'uniform'
+    low: 0.2
+    high: 0.3
+
