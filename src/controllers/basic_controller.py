@@ -38,7 +38,7 @@ class BasicMAC:
         # else:
         agent_inputs = self._build_inputs(ep_batch, t)
 
-        print(self.args.agent)
+        #print(self.args.agent)
         avail_actions = ep_batch["avail_actions"][:, t]
         if self.args.agent == "gnn":
             agent_outs, self.hidden_states = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])

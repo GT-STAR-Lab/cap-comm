@@ -11,6 +11,7 @@ EPyMARL is  an extension of [PyMARL](https://github.com/oxwhirl/pymarl), and inc
 - [Extended Python MARL framework - EPyMARL](#extended-python-marl-framework---epymarl)
 - [Table of Contents](#table-of-contents)
 - [Installation & Run instructions](#installation--run-instructions)
+  - [Python Environment](#python-environment)
   - [Installing LBF, RWARE, and MPE](#installing-lbf-rware-and-mpe)
   - [Using A Custom Gym Environment](#using-a-custom-gym-environment)
 - [Run an experiment on a Gym environment](#run-an-experiment-on-a-gym-environment)
@@ -25,6 +26,30 @@ EPyMARL is  an extension of [PyMARL](https://github.com/oxwhirl/pymarl), and inc
 
 For information on installing and using this codebase with SMAC, we suggest visiting and reading the original [PyMARL](https://github.com/oxwhirl/pymarl) README. Here, we maintain information on using the extra features EPyMARL offers.
 To install the codebase, clone this repo and install the `requirements.txt`.  
+
+## Python Environment
+
+### Anaconda
+
+Create the anaconda environment for python 3.8
+```
+conda create -n ca-gnn python=3.8 pip
+conda activate ca-gnn
+```
+
+Install pytorch for the specifications of your system. See [Pytorch installation instructions](https://pytorch.org/).
+
+Install requirements
+```
+pip install -r requirements.txt
+```
+
+Install [Pytorch Geometric (PyG)](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html)
+
+Now the multi-agent particle environment must be installed. `cd` into the `mpe` directory and run
+```
+pip install -e .
+```
 
 ## Installing LBF, RWARE, and MPE
 
