@@ -33,8 +33,8 @@ To install the codebase, clone this repo and install the `requirements.txt`.
 
 Create the anaconda environment for python 3.8
 ```
-conda create -n ca-gnn python=3.8 pip
-conda activate ca-gnn
+conda create -n ca-gnn-marl python=3.8 pip
+conda activate ca-gnn-marl
 ```
 
 Install pytorch for the specifications of your system. See [Pytorch installation instructions](https://pytorch.org/).
