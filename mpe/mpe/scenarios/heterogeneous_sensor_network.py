@@ -52,8 +52,8 @@ class Scenario(BaseScenario):
         
 
     def reset_world(self, world):
-        if not self.parsed_config:
-            print('Reseting without config')
+        #if not self.parsed_config:
+        #    print('Reseting without config')
 
         trait_dist = np.random.normal(loc = 0.25, scale = 0.1, size=(self.num_agents, ))
         self.traits = np.zeros((self.num_agents))
@@ -107,9 +107,9 @@ class Scenario(BaseScenario):
             key_list = dir(world)
             if 'config' in key_list:
                 self.parse_config(world)
-                print('\nConfig has been parsed.\n')
-            else:
-                print('Warning: config has not been parsed.\n')
+                #print('\nConfig has been parsed.\n')
+            #else:
+                #print('Warning: config has not been parsed.\n')
 
         agent_pos = np.array(agent.state.p_pos)
         agent_vel = np.array(agent.state.p_vel)

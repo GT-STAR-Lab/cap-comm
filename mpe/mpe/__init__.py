@@ -22,6 +22,7 @@ _particles = {
     "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
     "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
     "terrain_dependant_navigation": "TerrainDependantNavigation-v0",
+    "search_and_capture": "SearchAndCapture-v0",
 }
 
 for scenario_name, gymkey in _particles.items():

@@ -23,6 +23,7 @@ def load_files(args):
     config = open(args.run + '/config.json')
 
     config = DictView(json.load(config))
+    print(config.env_args)
 
     with open('../' + config.env_args['config_path'], 'r') as outfile:
         task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
@@ -76,12 +77,13 @@ def visualize(args):
         env_name = 'terrain_aware_navigation'
     elif 'DependantNavigation' in config.env_args['key']:
         env_name = 'terrain_dependant_navigation'
+    elif 'Search' in config.env_args['key']:
+        env_name = 'search_and_capture'
     
     env = make_env(env_name)
     env.set_config(config=task_config)
 
     obs = env.reset()
-
 
     # env.render()
     n_agents = len(obs)
@@ -100,14 +102,16 @@ def visualize(args):
             
 
        
-            adj_matrix = env.get_adj_matrix()
-            tobs = torch.tensor(np.array(obs)).float()
-            print(tobs.shape)
+            #adj_matrix = env.get_adj_matrix()
+            #tobs = torch.tensor(np.array(obs)).float()
+            #print(tobs.shape)
             if config.agent == 'gnn':
+                adj_matrix = env.get_adj_matrix()
                 q_values, hs = model(torch.Tensor(obs), torch.Tensor(adj_matrix))
             else:
-            	q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
+                q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
             actions = np.argmax(q_values.detach().numpy(), axis=1)
+            print(actions)
 
             obs, reward, done, _ = env.step(actions)
 
@@ -115,7 +119,7 @@ def visualize(args):
             
             if args.render or args.save_gif:
                 img = env.render(mode='rgb_array')
-                imgs[j * steps + k, :, : :] = img
+                #imgs[j * steps + k, :, : :] = img
                 time.sleep(.05)
         
         obs = env.reset()
