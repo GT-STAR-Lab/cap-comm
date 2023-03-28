@@ -105,6 +105,8 @@ def visualize(args):
             print(tobs.shape)
             if config.agent == 'gnn':
                 q_values, hs = model(torch.Tensor(obs), torch.Tensor(adj_matrix))
+            else:
+            	q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
             actions = np.argmax(q_values.detach().numpy(), axis=1)
 
             obs, reward, done, _ = env.step(actions)
