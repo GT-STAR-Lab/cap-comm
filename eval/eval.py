@@ -142,7 +142,7 @@ def visualize(args):
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--run', default=None)
+    parser.add_argument('--run', default=None, help="The sacred folder for the experiment you wish to run")
     parser.add_argument('--num-eps', default=8, type=int)
     parser.add_argument('--save-gif', default=False, action='store_true')
     parser.add_argument('--render', default=False, action='store_true')
