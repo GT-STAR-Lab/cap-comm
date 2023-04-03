@@ -1,6 +1,29 @@
 from collections import defaultdict
 import logging
 import numpy as np
+import datetime
+
+"""
+Get name of directory that both Sacred and Tensorboard save files to.
+
+Sacred: ./results/sacred/<unique_dirname>
+Tensorboard: ./results/tb_logs/<unique_dirname>
+
+unique_dirname format:
+<current datetime>__<alg-name>__<map-name>
+
+e.g. 
+2023-04-03:03-44-08-PM__qmix__mpe:SimpleSpeakerListener-v0
+"""
+def get_unique_dirname(alg_name, map_name):
+    if not alg_name:
+        raise Exception("This experiment does not have a valid alg_name! Needed to save results with Sacred and visualize with Tensorboard!")
+
+    if not map_name:
+        raise Exception("This experiment does not have a valid map_name! Needed to save results with Sacred and visualize with Tensorboard!")
+
+    unique_dirname = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}__{alg_name}__{map_name}"
+    return unique_dirname
 
 class Logger:
     def __init__(self, console_logger):
