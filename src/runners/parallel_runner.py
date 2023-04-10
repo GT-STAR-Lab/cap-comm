@@ -12,6 +12,8 @@ class ParallelRunner:
 
     def __init__(self, args, logger):
         self.args = args
+        # hacky: inject global seed into env_args seed for the env runners
+        self.args.env_args["seed"] = self.args.seed
         self.logger = logger
         self.batch_size = self.args.batch_size_run
 

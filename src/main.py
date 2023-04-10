@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import datetime
 import numpy as np
 import os
@@ -26,6 +28,7 @@ ex.captured_out_filter = apply_backspaces_and_linefeeds
 results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
 # results_path = "/home/ubuntu/data"
 
+"""
 @ex.main
 def my_main(_run, _config, _log):
     # Setting the random seed throughout the modules
@@ -35,7 +38,7 @@ def my_main(_run, _config, _log):
     config['env_args']['seed'] = config["seed"]
     # run the framework
     run(_run, config, _log)
-
+"""
 
 def _get_config(params, arg_name, subfolder):
     config_name = None
@@ -71,22 +74,46 @@ def config_copy(config):
     else:
         return deepcopy(config)
 
+def get_config_filepath(filename, subfolder=""):
+    if subfolder:
+        return os.path.join(os.path.dirname(__file__), "config", subfolder, f"{filename}.yaml")
+    else:
+        return os.path.join(os.path.dirname(__file__), "config", f"{filename}.yaml")
 
-def main():
+
+"""
+Configure experiment, Sacred's CLI interface allows us to change any of the
+local variables below, e.g.
+
+>> ./src/main.py print_config with 'env_yaml=gymma' 'alg_yaml=qmix'
+"""
+@ex.config
+def config():
+    base_yaml = "default"
+    env_yaml = "gymma"
+    alg_yaml = "qmix"
+
+    # Based on the config filenmaes given above, inject each {filename}.yaml
+    # into Sacred's config
+    ex.add_config(get_config_filepath(base_yaml))
+    ex.add_config(get_config_filepath(env_yaml, "envs"))
+    ex.add_config(get_config_filepath(alg_yaml, "algs"))
+
+    # Inject map_name into env_args
+    map_name = "mpe:SimpleSpeakerListener-v0"
+    ex.add_config({"env_args": {"key": map_name}})
+
+@ex.automain
+def main(_run, _config, _log, seed):
     params = deepcopy(sys.argv)
     th.set_num_threads(1)
 
-    # Get the defaults from default.yaml
-    with open(os.path.join(os.path.dirname(__file__), "config", "default.yaml"), "r") as f:
-        try:
-            config_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        except yaml.YAMLError as exc:
-            assert False, "default.yaml error: {}".format(exc)
+    # Standardize the random seed throughout the modules to match Sacred's
+    # auto-generated seed
+    np.random.seed(seed)
+    th.manual_seed(seed)
 
-    # Load algorithm and env base configs
-    env_config = _get_config(params, "--env-config", "envs")
-    alg_config = _get_config(params, "--config", "algs")
-    
+    """
     new_het_config = None
     for param in params:
         if param.startswith("env_args.map_name"):
@@ -106,23 +133,11 @@ def main():
             het_config = yaml.load(f, Loader=yaml.SafeLoader)
     else:
         het_config = {'name': 'no het_config used'}
-
-    # config_dict = {**config_dict, **env_config, **alg_config}
-    config_dict = recursive_dict_update(config_dict, env_config)
-    config_dict = recursive_dict_update(config_dict, alg_config)
-
-    try:
-        map_name = config_dict["env_args"]["map_name"]
-    except:
-        map_name = config_dict["env_args"]["key"]    
-    
-    # now add all the config to sacred
-    ex.add_config(config_dict)
+    """
 
     # Save Sacred files to disk
-    unique_token = get_unique_dirname(config_dict['name'], map_name)
-
-    logger.info("Saving to FileStorageObserver in results/sacred/{unique_token}.")
+    unique_token = get_unique_dirname(_config['alg_yaml'], _config['map_name'])
+    logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
     file_obs_path = os.path.join(results_path, f"sacred/{unique_token}")
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 
@@ -137,8 +152,11 @@ def main():
     # ex.observers.append(MongoObserver(db_name="marlbench")) #url='172.31.5.187:27017'))
     # ex.observers.append(MongoObserver())
 
-    ex.run_commandline(params)
+    # Give run.py's run() the Sacred runner, config, and logging modules to run
+    # the experiment
+    run(_run, _config, _log)
 
+    """
     subfolders = [ f.path for f in os.scandir(file_obs_path) if f.is_dir() ]
     # print(subfolders)
     subfolders = [int(subfolder.split('/')[-1]) for subfolder in subfolders if not subfolder.split('/')[-1] == '_sources']
@@ -146,6 +164,7 @@ def main():
     het_config_path = os.path.join(file_obs_path, last_folder + "/het_agents.yaml")
     with open(het_config_path , 'w') as file:
         documents = yaml.dump(het_config, file)
+    """
 
 if __name__ == '__main__':
     main()
