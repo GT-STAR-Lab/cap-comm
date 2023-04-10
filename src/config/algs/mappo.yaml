@@ -25,6 +25,7 @@ agent_output_type: "pi_logits"
 learner: "ppo_learner"
 entropy_coef: 0.01
 use_rnn: False
+use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
 standardise_returns: True
 standardise_rewards: False
 q_nstep: 5 # 1 corresponds to normal r + gammaV

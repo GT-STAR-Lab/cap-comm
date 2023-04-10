@@ -39,7 +39,7 @@ def load_files(args):
             break
 
     model_path = model_save[(model_save.find('to ') + 3):]
-    model_path = model_path[:-3]
+    model_path = model_path[:model_path.rfind("/")+1]
 
     ckts = [int(re.sub("[^0-9]", "", ckt) if len(re.sub("[^0-9]", "", ckt)) > 0 else str(-1)) for ckt in os.listdir('../' + model_path)]
     print('../' + model_path + str(max(ckts)) + '/agent.th')
@@ -88,7 +88,7 @@ def visualize(args):
     model.args.n_agents = n_agents
     steps = 50
     num_eps = args.num_eps
-    imgs = np.zeros((num_eps * steps, 1400, 1400, 3), dtype=np.uint8)
+    imgs = np.zeros((num_eps * steps, 700, 700, 3), dtype=np.uint8)
     
     hs = [np.zeros((config.hidden_dim, )) for i in range(n_agents)]
 
@@ -96,15 +96,11 @@ def visualize(args):
     
     for j in range(num_eps):
         for k in range(steps):
-            actions = []
-            
-
-       
-            adj_matrix = env.get_adj_matrix()
-            tobs = torch.tensor(np.array(obs)).float()
-            print(tobs.shape)
             if config.agent == 'gnn':
+                adj_matrix = env.get_adj_matrix()
                 q_values, hs = model(torch.Tensor(obs), torch.Tensor(adj_matrix))
+            else:
+            	q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
             actions = np.argmax(q_values.detach().numpy(), axis=1)
 
             obs, reward, done, _ = env.step(actions)
@@ -140,7 +136,7 @@ def visualize(args):
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--run', default=None)
+    parser.add_argument('--run', default=None, help="The sacred folder for the experiment you wish to run")
     parser.add_argument('--num-eps', default=8, type=int)
     parser.add_argument('--save-gif', default=False, action='store_true')
     parser.add_argument('--render', default=False, action='store_true')
