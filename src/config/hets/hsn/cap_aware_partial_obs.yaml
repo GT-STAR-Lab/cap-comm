@@ -150,8 +150,8 @@ agents:
     comm_rad: 0.2666399646011262
     id: '110001'
 clipped: true
-fully_observed: false
-num_relevant_agents: all
+fully_observed: true #If false, agents do not share observations at all
+num_relevant_agents: 2 
 num_test_candidates: 10
 num_train_candidates: 40
 train: true

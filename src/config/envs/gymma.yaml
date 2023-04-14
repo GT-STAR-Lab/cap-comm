@@ -8,7 +8,7 @@ env_args:
   config_path: null #'src/config/hets/tdn_agent_id.yaml'
 
 test_greedy: True
-test_nepisode: 100
+test_nepisode: 1000
 test_interval: 50000
 log_interval: 50000
 runner_log_interval: 10000

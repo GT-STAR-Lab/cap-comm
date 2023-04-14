@@ -56,7 +56,7 @@ class BasicMAC:
 
             if self.args.use_gnn:
                 if not test_mode:
-                    episilon_action_num = agent_outs(-1)
+                    epsilon_action_num = agent_outs[-1]
 
                     if getattr(self.args, "mask_before_softmax", True):
                         # select random action with probability epsilon

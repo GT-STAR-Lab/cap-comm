@@ -1,3 +1,5 @@
+#This shouldn't actually be used by itself
+#It needs the agents field like the yaml files in hsn
 clipped: True
 use_agent_id: False
 train: True

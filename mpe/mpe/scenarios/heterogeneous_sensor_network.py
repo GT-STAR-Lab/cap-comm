@@ -15,7 +15,7 @@ class Scenario(BaseScenario):
         self.traits = np.random.random((self.num_agents, ))
         self.parsed_config = False
         self.agent_id = False
-        self.fully_obsrved = False
+        self.fully_observed = False
         self.num_relevant_agents = self.num_agents
 
 
@@ -47,6 +47,7 @@ class Scenario(BaseScenario):
         self.num_relevant_agents = world.config['num_relevant_agents']
         self.num_relevant_agents = self.num_agents if self.num_relevant_agents == 'all' else self.num_relevant_agents
         self.agent_id = world.config['use_agent_id']
+        self.fully_observed = world.config['fully_observed']
         self.config = world.config
         self.reset_world(world)
         
@@ -132,9 +133,9 @@ class Scenario(BaseScenario):
         else:
             obs = np.concatenate((obs, agent_sensing_rad))
 
-        if self.fully_obsrved and self.agent_id:
-            obs = np.concatenate((obs, np.array([ag.bin_id_vec for ag in relevant_agnets]).flatten()))
-        elif self.fully_obsrved and not self.agent_id:
+        if self.fully_observed and self.agent_id:
+            obs = np.concatenate((obs, np.array([ag.bin_id_vec for ag in relevant_agents]).flatten()))
+        elif self.fully_observed and not self.agent_id:
             obs = np.concatenate((obs, other_pos, other_sensing_rad))
 
         return obs
