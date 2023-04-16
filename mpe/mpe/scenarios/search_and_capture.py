@@ -35,12 +35,6 @@ class Scenario(BaseScenario):
             agent.trait_dict = {}
             agent.name = 'agent %d' % i
             agent.collide = False
-            if i < self.sensing: #sensing
-                agent.color = self.blue
-            elif i < self.sensing + self.capture: #capture
-                agent.color = self.yellow
-            else: #both
-                agent.color = self.orange
         # add landmarks
         world.landmarks = [Landmark() for i in range(self.L)]
         for i, landmark in enumerate(world.landmarks):
@@ -94,6 +88,14 @@ class Scenario(BaseScenario):
 
             agent.trait_dict['capture_radius'] = self.capture_radii[i]
             agent.trait_dict['sensing_radius'] = self.sensing_radii[i]
+
+            if agent.trait_dict['capture_radius'] > 0 and agent.trait_dict['sensing_radius'] > 0:
+                agent.color = self.orange
+            elif agent.trait_dict['sensing_radius'] > 0:
+                agent.color = self.blue
+            else:
+                agent.color = self.yellow
+                
             
             #I have no idea why Max included this in HSN so I'm commenting it out
             #If anyone finds a reason for them, uncomment them and tell me why

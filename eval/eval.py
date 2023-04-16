@@ -83,7 +83,8 @@ def visualize(args):
         env_name = 'search_and_capture'
     
     env = make_env(env_name)
-    env.set_config(config=task_config)
+    if len(task_config) > 1:
+        env.set_config(config=task_config)
 
     obs = env.reset()
 
