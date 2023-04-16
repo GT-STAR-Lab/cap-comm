@@ -18,10 +18,17 @@ def main(args):
     for i in range(num_candidates):
         config['agents'][i] = {}
         config['agents'][i]['id'] = format(i, '#0'+str(idx_size + 2)+'b').replace('0b', '')
+    
+    #The way class probs works is the first index is the probability of class 1, 2nd is class 2, ...
+    #The final index is the probability of all classes appearing
+    if 'class_probs' in config_keys:
+        agent_types = np.random.choice(range(len(config['class_probs'])), p=config['class_probs'], size=num_candidates)
+    else:
+        agent_types = []
 
     if 'traits' in config_keys:
         traits_keys = list(config['traits'])
-        for trait in traits_keys:
+        for t, trait in enumerate(traits_keys):
             # trait_mean = config['traits'][trait]['mean']
             # trait_var = config['traits'][trait]['var']
 
@@ -36,7 +43,13 @@ def main(args):
                 trait_val[trait_val<=0] = 0
             idx_size = int(np.ceil(np.log2(num_candidates)))
             for i in range(num_candidates):
-                config['agents'][i][trait] = float(trait_val[i])
+                if agent_types == []:
+                    config['agents'][i][trait] = float(trait_val[i])
+                else:
+                    if agent_types[i] == len(config['class_probs'])-1 or agent_types[i] == t:
+                        config['agents'][i][trait] = float(trait_val[i])
+                    else:
+                        config['agents'][i][trait] = 0
 
     with open(args.default_yaml if args.save_path is None else args.save_path, 'w') as outfile:
         yaml.dump(config, outfile, default_flow_style=False, allow_unicode=True)

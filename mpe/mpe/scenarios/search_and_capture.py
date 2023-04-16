@@ -75,6 +75,13 @@ class Scenario(BaseScenario):
         else:
             self.sensing_radii = np.random.normal(loc=.2, scale=.1, size=(self.num_agents,))
             self.capture_radii = np.random.normal(loc=.1, scale=.05, size=(self.num_agents,))
+            
+            for i in range(self.num_agents):
+                agent_class = np.random.choice(range(3))
+                if agent_class == 0:
+                    self.capture_radii[i] = 0
+                elif agent_class == 1:
+                    self.sensing_radii[i] = 0
 
         # set initial states
         for i, agent in enumerate(world.agents):
@@ -84,16 +91,9 @@ class Scenario(BaseScenario):
             agent.state.c = np.zeros(world.dim_c)
             agent.sensed_prey = np.array([-4, -4])
             agent.silent = True
-            
-            if i < self.sensing:
-                agent.trait_dict['capture_radius'] = 0
-                agent.trait_dict['sensing_radius'] = self.sensing_radii[i]
-            elif i < self.sensing + self.capture:
-                agent.trait_dict['capture_radius'] = self.capture_radii[i]
-                agent.trait_dict['sensing_radius'] = 0
-            else:
-                agent.trait_dict['capture_radius'] = self.capture_radii[i]
-                agent.trait_dict['sensing_radius'] = self.sensing_radii[i]
+
+            agent.trait_dict['capture_radius'] = self.capture_radii[i]
+            agent.trait_dict['sensing_radius'] = self.sensing_radii[i]
             
             #I have no idea why Max included this in HSN so I'm commenting it out
             #If anyone finds a reason for them, uncomment them and tell me why
@@ -177,7 +177,7 @@ class Scenario(BaseScenario):
         if agent.trait_dict['sensing_radius'] > 0:
             dists = np.array([np.sqrt(np.sum(np.square(l.state.p_pos - agent.state.p_pos))) for l in world.landmarks if (l.color != self.green).any()])
             poses = np.array([ l.state.p_pos.flatten() for l in world.landmarks if (l.color != self.green).any()]) #Ignoring prey that have been caught
-            if np.amin(dists) <= agent.trait_dict['sensing_radius']:
+            if len(dists) > 0 and np.amin(dists) <= agent.trait_dict['sensing_radius']:
                 sensed_prey = poses[np.argmin(dists)]
         agent.sensed_prey = sensed_prey
 
