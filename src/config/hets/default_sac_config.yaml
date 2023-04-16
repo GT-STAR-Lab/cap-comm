@@ -3,13 +3,18 @@
 clipped: True
 use_agent_id: False
 train: True
-fully_observed: False
-num_relevant_agents: all
+fully_observed: True #If false, agents do not share observations at all 
+num_relevant_agents: 2
 num_test_candidates: 10
 num_train_candidates: 40
 traits:
-  comm_rad:
-    distribution: 'uniform'
-    low: 0.2
-    high: 0.3
+  sensing_rad:
+    distribution: 'normal'
+    loc: 0.2
+    scale: 0.1
+  capture_rad:
+    distribution: 'normal'
+    loc: .1
+    scale: .05
+    
 

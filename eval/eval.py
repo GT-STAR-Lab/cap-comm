@@ -25,10 +25,12 @@ def load_files(args):
     config = DictView(json.load(config))
     print(config.env_args)
 
-    with open('../' + config.env_args['config_path'], 'r') as outfile:
-        task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
-
-
+    try:
+        with open('../' + config.env_args['config_path'], 'r') as outfile:
+            task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
+    except TypeError as e:
+        print("Warning: cannot open the task config file, running without one")
+        task_config = {}
 
     config.n_actions = 5
     cout = open(args.run + '/cout.txt')
@@ -90,6 +92,7 @@ def visualize(args):
     model.args.n_agents = n_agents
     steps = 50
     num_eps = args.num_eps
+    #I've heard rumors that the 700,700 below may need to be 1400,1400 depending on the version of gym being used
     imgs = np.zeros((num_eps * steps, 700, 700, 3), dtype=np.uint8)
     
     hs = [np.zeros((config.hidden_dim, )) for i in range(n_agents)]
@@ -112,7 +115,7 @@ def visualize(args):
             
             if args.render or args.save_gif:
                 img = env.render(mode='rgb_array')
-                #imgs[j * steps + k, :, : :] = img
+                imgs[j * steps + k, :, : :] = img
                 time.sleep(.05)
         
         obs = env.reset()

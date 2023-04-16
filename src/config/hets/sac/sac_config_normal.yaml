@@ -1,0 +1,217 @@
+agents:
+  0:
+    capture_rad: 0.0910180865792582
+    id: '000000'
+    sensing_rad: 0.1387440621033587
+  1:
+    capture_rad: 0.18387035583063652
+    id: '000001'
+    sensing_rad: 0.1522580694067406
+  2:
+    capture_rad: 0.0849708033176173
+    id: '000010'
+    sensing_rad: 0.23626668017295793
+  3:
+    capture_rad: 0.1260316018712667
+    id: '000011'
+    sensing_rad: 0.12364183492485353
+  4:
+    capture_rad: 0.056670680840340215
+    id: '000100'
+    sensing_rad: 0.2422232971943466
+  5:
+    capture_rad: 0.08920390224628798
+    id: '000101'
+    sensing_rad: 0.2759586985417777
+  6:
+    capture_rad: 0.1529369431777858
+    id: '000110'
+    sensing_rad: 0.14286027482525146
+  7:
+    capture_rad: 0.071163029601527
+    id: '000111'
+    sensing_rad: 0.2848991965431859
+  8:
+    capture_rad: 0.11776764441124699
+    id: '001000'
+    sensing_rad: 0.06985963816372298
+  9:
+    capture_rad: 0.07670128515138391
+    id: '001001'
+    sensing_rad: 0.20087836078356844
+  10:
+    capture_rad: 0.053427567267104764
+    id: '001010'
+    sensing_rad: 0.08079375772795178
+  11:
+    capture_rad: 0.059696728766539
+    id: '001011'
+    sensing_rad: 0.24792337334958256
+  12:
+    capture_rad: 0.09260075077884519
+    id: '001100'
+    sensing_rad: 0.12930793834591106
+  13:
+    capture_rad: 0.04924881945347248
+    id: '001101'
+    sensing_rad: 0.1570239720966733
+  14:
+    capture_rad: 0.12574867290651998
+    id: '001110'
+    sensing_rad: 0.16023296564937822
+  15:
+    capture_rad: 0.15035698886156743
+    id: '001111'
+    sensing_rad: 0.2418550345624439
+  16:
+    capture_rad: 0.08856717793346015
+    id: '010000'
+    sensing_rad: 0.15094852638492262
+  17:
+    capture_rad: 0.15026262347035632
+    id: '010001'
+    sensing_rad: 0.2449243800278309
+  18:
+    capture_rad: 0.04411698689495036
+    id: '010010'
+    sensing_rad: 0.198449377290848
+  19:
+    capture_rad: 0.10203768265421984
+    id: '010011'
+    sensing_rad: 0.3840834997032581
+  20:
+    capture_rad: 0.0673092172972284
+    id: '010100'
+    sensing_rad: 0.21311917900063482
+  21:
+    capture_rad: 0.13840266312072738
+    id: '010101'
+    sensing_rad: 0.4706314149970226
+  22:
+    capture_rad: 0.09249859556877149
+    id: '010110'
+    sensing_rad: 0.16136356420010986
+  23:
+    capture_rad: 0.11973093629100967
+    id: '010111'
+    sensing_rad: 0.06194090395768617
+  24:
+    capture_rad: 0.10858673669916749
+    id: '011000'
+    sensing_rad: 0.2235187895201508
+  25:
+    capture_rad: 0.1791010944756503
+    id: '011001'
+    sensing_rad: 0.3340931502726848
+  26:
+    capture_rad: 0.08965245912618178
+    id: '011010'
+    sensing_rad: 0.15536965696721794
+  27:
+    capture_rad: 0.07736775868245001
+    id: '011011'
+    sensing_rad: 0.16818873751938707
+  28:
+    capture_rad: 0.09771678270753047
+    id: '011100'
+    sensing_rad: 0.21440819732922178
+  29:
+    capture_rad: 0.12408381145663049
+    id: '011101'
+    sensing_rad: 0.11583276777351117
+  30:
+    capture_rad: 0.14019448378299304
+    id: '011110'
+    sensing_rad: 0.2535677396928284
+  31:
+    capture_rad: 0.15545922704353282
+    id: '011111'
+    sensing_rad: 0.2002106553899021
+  32:
+    capture_rad: 0.064791919404131
+    id: '100000'
+    sensing_rad: 0.08982627828557169
+  33:
+    capture_rad: 0.07494138146337263
+    id: '100001'
+    sensing_rad: 0.1901749089021289
+  34:
+    capture_rad: 0.04823679565197238
+    id: '100010'
+    sensing_rad: 0.23454107718239464
+  35:
+    capture_rad: 0.11132442081069764
+    id: '100011'
+    sensing_rad: 0.15632355739016
+  36:
+    capture_rad: 0.09795781311822659
+    id: '100100'
+    sensing_rad: 0.22336077938907842
+  37:
+    capture_rad: 0.04901738714922395
+    id: '100101'
+    sensing_rad: 0.0
+  38:
+    capture_rad: 0.10264988352990105
+    id: '100110'
+    sensing_rad: 0.279193131613625
+  39:
+    capture_rad: 0.15562025220502848
+    id: '100111'
+    sensing_rad: 0.25400273305283844
+  40:
+    capture_rad: 0.07776939792478271
+    id: '101000'
+    sensing_rad: 0.2898342647075784
+  41:
+    capture_rad: 0.10118277004151881
+    id: '101001'
+    sensing_rad: 0.08556536249959013
+  42:
+    capture_rad: 0.09486557763289105
+    id: '101010'
+    sensing_rad: 0.055852016298556045
+  43:
+    capture_rad: 0.13156089202880805
+    id: '101011'
+    sensing_rad: 0.3211778196418166
+  44:
+    capture_rad: 0.10948499647591471
+    id: '101100'
+    sensing_rad: 0.06962073727792106
+  45:
+    capture_rad: 0.10150407229113373
+    id: '101101'
+    sensing_rad: 0.2339470980083818
+  46:
+    capture_rad: 0.11709030015490164
+    id: '101110'
+    sensing_rad: 0.2923243193967634
+  47:
+    capture_rad: 0.01836123101591494
+    id: '101111'
+    sensing_rad: 0.11630205244979508
+  48:
+    capture_rad: 0.08892975921604508
+    id: '110000'
+    sensing_rad: 0.2703967850882822
+  49:
+    capture_rad: 0.11081222820613287
+    id: '110001'
+    sensing_rad: 0.22495388076910808
+clipped: true
+fully_observed: true
+num_relevant_agents: 2
+num_test_candidates: 10
+num_train_candidates: 40
+train: true
+traits:
+  capture_rad:
+    distribution: normal
+    loc: 0.1
+    scale: 0.05
+  sensing_rad:
+    distribution: normal
+    loc: 0.2
+    scale: 0.1
+use_agent_id: false
