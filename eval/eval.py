@@ -91,7 +91,7 @@ def visualize(args):
     # env.render()
     n_agents = len(obs)
     model.args.n_agents = n_agents
-    steps = 50
+    steps = 40
     num_eps = args.num_eps
     #I've heard rumors that the 700,700 below may need to be 1400,1400 depending on the version of gym being used
     imgs = np.zeros((num_eps * steps, 700, 700, 3), dtype=np.uint8)

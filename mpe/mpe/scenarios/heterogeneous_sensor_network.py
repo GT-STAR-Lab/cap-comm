@@ -12,17 +12,20 @@ class Scenario(BaseScenario):
         self.succ_thres = 0.1
 
 
-        self.traits = np.random.random((self.num_agents, ))
         self.parsed_config = False
         self.agent_id = False
         self.fully_observed = False
+
+
+
+
+    def make_world(self, num_agents=4):
+        world = World()
+
+        self.num_agents = num_agents
+        self.traits = np.random.random((self.num_agents, ))
         self.num_relevant_agents = self.num_agents
 
-
-
-
-    def make_world(self):
-        world = World()
         # set any world properties first
         world.dim_c = 0
         num_agents = self.num_agents

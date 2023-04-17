@@ -11,11 +11,11 @@ class_probs: [.5, .45, .05] #pr(sensing), pr(capture), pr(both)
 traits:
   sensing_rad:
     distribution: 'normal'
-    loc: 0.2
-    scale: 0.1
+    loc: 0.4 
+    scale: 0.05
   capture_rad:
     distribution: 'normal'
-    loc: .1
+    loc: .25 
     scale: .05
     
 
