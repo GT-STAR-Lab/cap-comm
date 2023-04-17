@@ -5,7 +5,7 @@ import time
 import threading
 import torch as th
 from types import SimpleNamespace as SN
-from utils.logging import Logger
+from utils.logging import Logger, get_unique_dirname
 from utils.timehelper import time_left, time_str
 from os.path import dirname, abspath
 
@@ -31,14 +31,12 @@ def run(_run, _config, _log):
     experiment_params = pprint.pformat(_config, indent=4, width=1)
     _log.info("\n\n" + experiment_params + "\n")
 
-    # configure tensorboard logger
-    # unique_token = "{}__{}".format(args.name, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-
+    # save tensorboard files to new dir
     try:
         map_name = _config["env_args"]["map_name"]
     except:
         map_name = _config["env_args"]["key"]   
-    unique_token = f"{_config['name']}_seed{_config['seed']}_{map_name}_{datetime.datetime.now()}"
+    unique_token = get_unique_dirname(_config['name'], map_name)
 
     args.unique_token = unique_token
     if args.use_tensorboard:
