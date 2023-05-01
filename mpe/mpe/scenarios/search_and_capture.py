@@ -140,7 +140,7 @@ class Scenario(BaseScenario):
                             break
                     else: #color must be gray
                         if dist < a.trait_dict['sensing_radius']:
-                            landmark_reward = 1 * (dist/a.trait_dict['sensing_radius'])
+                            landmark_reward = 1
                             new_color = self.red #prey has now been sensed so can be captured
                             break
                 reward += landmark_reward
