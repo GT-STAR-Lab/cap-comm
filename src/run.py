@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime
 import os
 import pprint
@@ -16,7 +17,9 @@ from components.episode_buffer import ReplayBuffer
 from components.transforms import OneHot
 
 
-def run(_run, _config, _log):
+def run(_run, config, _log):
+    # hack to be able to modify Sacred config
+    _config = deepcopy(config)
 
     # check args sanity
     _config = args_sanity_check(_config, _log)
