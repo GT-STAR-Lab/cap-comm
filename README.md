@@ -46,10 +46,16 @@ pip install -r requirements.txt
 
 Install [Pytorch Geometric (PyG)](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html)
 
-Now the multi-agent particle environment must be installed. `cd` into the `mpe` directory and run
+Now the multi-agent particle environment and MARBLER must be installed.
+
+For MPE: `cd` into the `mpe` directory and run
 ```
 pip install -e .
 ```
+For MARBLER: 
+1. Download and Install the [Robotarium Python Simulator](https://github.com/robotarium/robotarium_python_simulator)
+2. `cd` into the MARBLER directory and run `pip install -e .`
+
 
 ## Installing LBF, RWARE, and MPE
 

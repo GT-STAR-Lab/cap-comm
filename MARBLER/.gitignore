@@ -1,0 +1,8 @@
+**/__pycache__/
+tb_logs/
+build/
+results/
+.DS_Store
+.idea/
+**/.ipynb_checkpoints/
+robotarium_gym.egg-info/
