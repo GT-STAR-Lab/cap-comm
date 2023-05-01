@@ -14,7 +14,6 @@ import yaml
 from yaml import Loader
 import time
 from run import run
-import mpe
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
 logger = get_logger()

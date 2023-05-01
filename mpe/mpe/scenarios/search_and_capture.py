@@ -27,8 +27,6 @@ class Scenario(BaseScenario):
         world.dim_c = 0 #IDK what this is
         world.collaborative = False  # Force them to be collaborative in how reward is structured
 
-        self.mid = .2 #Sensing radius will be greater than this, capture radius will be less
-        self.scale = .1 #sensing r will be random*scale+mid, capture r will be mid-random*scale
         # add agents
         world.agents = [Agent() for i in range(self.num_agents)]
         for i, agent in enumerate(world.agents):
@@ -116,18 +114,20 @@ class Scenario(BaseScenario):
         For each landmark:
             If the landmark has already been captured (is green), reward of 0
             If the landmark has been sensed (is red) then:
-                If at least one agent is within its capture radius -> reward += 10
-                If no agent is within its capture radius:
-                    For each agent reward += max(-.1 * (dist/agent.sensing_radius), -.1)
+                If it is as least within one agent's capture radius -> reward += 10
             If the landmark is gray:
-                For each agent reward += max(-.1 * (dist/agent.sensing_radius), -.1)
+                If it is at least within one agent's search radius -> reward += 1
+        If not every landmark is green by the end of the step:
+            reward -= .05
         Reward is shared across all agents
         '''
         if agent.idx == 0:
             reward = 0
+            remaining_prey = 0
             for l in world.landmarks:
                 if (l.color == self.green).all(): #prey has been fully caught
                     continue
+                remaining_prey += 1
                 new_color = l.color
                 landmark_reward = 0
                 for a in world.agents:
@@ -136,23 +136,20 @@ class Scenario(BaseScenario):
                         if dist < a.trait_dict['capture_radius']:
                             landmark_reward = 10 #capture gives a large reward
                             new_color = self.green
+                            remaining_prey -= 1
                             break
-                        else:
-                            if dist < a.trait_dict['sensing_radius']:
-                                landmark_reward -= .1 * (dist/a.trait_dict['sensing_radius']) #The closer the sensing agent is to the landmark, the lower its punishment
-                            else:
-                                landmark_reward -= .1
                     else: #color must be gray
                         if dist < a.trait_dict['sensing_radius']:
-                            landmark_reward -= .1 * (dist/a.trait_dict['sensing_radius'])
+                            landmark_reward = 1 * (dist/a.trait_dict['sensing_radius'])
                             new_color = self.red #prey has now been sensed so can be captured
-                        else:
-                            landmark_reward -= .1
+                            break
                 reward += landmark_reward
                 l.color = new_color
-            self.reward = reward
+            if remaining_prey > 0: #Agents take a penalty every timestep that not every prey has been captured
+                reward -= .05
+            self.step_reward = reward
             #print(self.reward)
-        return self.reward
+        return self.step_reward
 
     def observation(self, agent, world):
         '''
