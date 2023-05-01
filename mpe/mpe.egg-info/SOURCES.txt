@@ -23,6 +23,7 @@ mpe/scenarios/heterogeneous_material_transport_ca.py
 mpe/scenarios/heterogeneous_sensor_network.py
 mpe/scenarios/heterogeneous_sensor_network_ca.py
 mpe/scenarios/multi_speaker_listener.py
+mpe/scenarios/search_and_capture.py
 mpe/scenarios/simple.py
 mpe/scenarios/simple_adversary.py
 mpe/scenarios/simple_crypto.py

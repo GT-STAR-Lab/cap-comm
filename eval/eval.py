@@ -23,11 +23,14 @@ def load_files(args):
     config = open(args.run + '/config.json')
 
     config = DictView(json.load(config))
+    print(config.env_args)
 
-    with open('../' + config.env_args['config_path'], 'r') as outfile:
-        task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
-
-
+    try:
+        with open('../' + config.env_args['config_path'], 'r') as outfile:
+            task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
+    except TypeError as e:
+        print("Warning: cannot open the task config file, running without one")
+        task_config = {}
 
     config.n_actions = 5
     cout = open(args.run + '/cout.txt')
@@ -76,18 +79,21 @@ def visualize(args):
         env_name = 'terrain_aware_navigation'
     elif 'DependantNavigation' in config.env_args['key']:
         env_name = 'terrain_dependant_navigation'
+    elif 'Search' in config.env_args['key']:
+        env_name = 'search_and_capture'
     
     env = make_env(env_name)
-    env.set_config(config=task_config)
+    if len(task_config) > 1:
+        env.set_config(config=task_config)
 
     obs = env.reset()
-
 
     # env.render()
     n_agents = len(obs)
     model.args.n_agents = n_agents
-    steps = 50
+    steps = 40
     num_eps = args.num_eps
+    #I've heard rumors that the 700,700 below may need to be 1400,1400 depending on the version of gym being used
     imgs = np.zeros((num_eps * steps, 700, 700, 3), dtype=np.uint8)
     
     hs = [np.zeros((config.hidden_dim, )) for i in range(n_agents)]
@@ -100,8 +106,9 @@ def visualize(args):
                 adj_matrix = env.get_adj_matrix()
                 q_values, hs = model(torch.Tensor(obs), torch.Tensor(adj_matrix))
             else:
-            	q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
+                q_values, hs = model(torch.Tensor(obs), torch.Tensor(hs))
             actions = np.argmax(q_values.detach().numpy(), axis=1)
+            print(actions)
 
             obs, reward, done, _ = env.step(actions)
 

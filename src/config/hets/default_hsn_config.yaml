@@ -1,5 +1,5 @@
-#This shouldn't actually be used by itself
-#It needs the agents field like the yaml files in hsn
+#This, along with every other default_xxx_config.yaml should only be used with generate_config.py
+#The configs that should be used are in the subfolders in this folder
 clipped: True
 use_agent_id: False
 train: True
