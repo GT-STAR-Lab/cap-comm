@@ -15,7 +15,7 @@ class GNNAgent(torch.nn.Module):
         self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
                                       nn.ReLU(inplace=True))
         if self.args.use_graph_attention:
-            self.messages = MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
+            self.messages = nn.MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
         else:
             self.messages = nn.Sequential(nn.Linear(self.args.msg_hidden_dim,self.args.msg_hidden_dim, bias=False),
                                      nn.ReLU(inplace=True))
@@ -24,8 +24,7 @@ class GNNAgent(torch.nn.Module):
         self.policy_head = nn.Sequential(nn.Linear(self.args.msg_hidden_dim + self.args.hidden_dim if self.message_passes > 0 else self.args.hidden_dim, self.args.hidden_dim),
                                          nn.ReLU(inplace=True))
 
-        self.actions = nn.Sequential(nn.Linear(self.args.hidden_dim, self.args.n_actions),
-                                         nn.ReLU(inplace=True))
+        self.actions = nn.Linear(self.args.hidden_dim, self.args.n_actions)
 
 
 
@@ -55,9 +54,6 @@ class GNNAgent(torch.nn.Module):
         #comm_mat = comm_mat#.unsqueeze #(0).repeat(batch_size,1,1)
        
         # comm_mat - {batch_size, N, N}
-
-        
-
         enc = self.encoder(x) # should be (batch_size,self.hidden_dim)
 
         msg = enc.view(-1, self.args.n_agents, self.args.hidden_dim) # shape is (batch_size, N, self.hidden_dim)

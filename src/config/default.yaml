@@ -54,3 +54,6 @@ use_graph_attention: False
 repeat_id: 1
 label: "default_label"
 hypergroup: null
+
+# ---- Debugging options ----
+detect_autograd_anomaly: False # uses the torch command to detect autograd anomlies; This can signficantly slow down training

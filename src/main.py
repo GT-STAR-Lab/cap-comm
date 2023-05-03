@@ -28,6 +28,7 @@ ex.captured_out_filter = apply_backspaces_and_linefeeds
 results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
 # results_path = "/home/ubuntu/data"
 
+th.autograd.set_detect_anomaly(True) # enables anomaly detection for backward() calls in training. (ONLY FOR DEGUB)
 """
 @ex.main
 def my_main(_run, _config, _log):
@@ -151,6 +152,11 @@ def main(_run, _config, _log, seed):
     #
     # ex.observers.append(MongoObserver(db_name="marlbench")) #url='172.31.5.187:27017'))
     # ex.observers.append(MongoObserver())
+
+    # detect anomlies in backward() for training torch networks (only do this for debuggin, can signficiantly
+    # slow down training)
+    if(_config["detect_autograd_anomaly"]):
+        th.autograd.set_detect_anomaly(True)
 
     # Give run.py's run() the Sacred runner, config, and logging modules to run
     # the experiment
