@@ -96,7 +96,10 @@ class BasicMAC:
   
     def _build_agents(self, input_shape):
         print(input_shape)
+        print("\033[31m" + self.args.agent + "\033[0m")
+
         self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
+        print("\033[31m" + str(type(self.agent)) + "\033[0m")
 
     def _build_comm(self, input_shape):
         self.gnn = comm_REGISTRY[self.args.gnn](input_shape, self.args)
