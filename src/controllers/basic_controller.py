@@ -40,8 +40,8 @@ class BasicMAC:
 
         #print(self.args.agent)
         avail_actions = ep_batch["avail_actions"][:, t]
-        if self.args.agent == "gnn":
-            agent_outs, self.hidden_states = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
+        if self.args.agent == "gnn" or self.args.agent == "gcn":
+            agent_outs, _ = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
         else:
             agent_outs, self.hidden_states = self.agent(agent_inputs, self.hidden_states)
 

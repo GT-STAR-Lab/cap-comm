@@ -26,7 +26,7 @@ learner: "ppo_learner"
 entropy_coef: 0.01
 use_rnn: False
 use_gnn: True #Weird things happen when this is true... The code working is not one of them :/
-agent: "gnn"
+agent: "gcn"
 use_graph_attention: False
 standardise_returns: True
 standardise_rewards: False
@@ -52,4 +52,4 @@ test_interval: 1
 log_interval: 1
 runner_log_interval: 1
 learner_log_interval: 1
-t_max: 1000
+t_max: 10000
