@@ -28,7 +28,6 @@ ex.captured_out_filter = apply_backspaces_and_linefeeds
 results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
 # results_path = "/home/ubuntu/data"
 
-th.autograd.set_detect_anomaly(True) # enables anomaly detection for backward() calls in training. (ONLY FOR DEGUB)
 """
 @ex.main
 def my_main(_run, _config, _log):
