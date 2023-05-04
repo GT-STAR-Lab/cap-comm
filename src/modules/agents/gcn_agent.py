@@ -3,8 +3,9 @@ import torch.nn as nn
 from torch.nn import Linear, Parameter
 from torch_geometric.nn import MessagePassing
 import torch.nn.functional as F
-from torch_geometric.utils import add_self_loops, degree
+from torch_geometric.utils import add_self_loops, degree, dense_to_sparse, to_torch_coo_tensor
 from modules.encoder import REGISTRY as encoder_REGISTRY
+
 class GCNConv(MessagePassing):
     """"
     Graph Convolutional Neural Network defined in the tutorial 
@@ -101,11 +102,17 @@ class GCNAgent(nn.Module):
             The input shape should be [batch_size, N, input_size]
         """
         # convert adj_matrix to edge index (with batch size)
-        edge_index = torch.nonzero(torch.squeeze(adj_matrix, dim=0), as_tuple=False).t()
+        # batch_edge_index = []
+        # for i in range(adj_matrix.shape[0]):
+        #     batch_edge_index.append(torch.stack(torch.where(adj_matrix[i] != 0), dim=0))
+        # # edge_index = torch.nonzero(torch.squeeze(adj_matrix, dim=0), as_tuple=False).t()
+       
+        # batch_edge_index = torch.stack(batch_edge_index, dim=0)
+
         
         x = self.encoder(x)
 
-        out = self.gcn(x, edge_index)
+        out = self.gcn(x, batch_edge_index)
 
         actions = self.actions(out)
         return(actions, out)
