@@ -25,7 +25,26 @@ ex = Experiment("pymarl")
 ex.logger = logger
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
-results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
+# results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
+# unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
+# logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
+# file_obs_path = os.path.join(results_path, f"sacred/{unique_token}")
+# ex.observers.append(FileStorageObserver.create(file_obs_path))
+
+# saving to disk because MongoObserver requires the Docker image to be set
+# up, which is hard
+# https://sacred.readthedocs.io/en/stable/examples.html#docker-setup
+# however, this is necessary to use Omniboard/other frontends
+# Tensorboard is configured separately, doesn't provide full Sacred
+# frontend but useful to see metrics/compare two runs
+# - Kevin
+#
+# ex.observers.append(MongoObserver(db_name="marlbench")) #url='172.31.5.187:27017'))
+# ex.observers.append(MongoObserver())
+
+# Give run.py's run() the Sacred runner, config, and logging modules to run
+# the experiment
+
 # results_path = "/home/ubuntu/data"
 
 """
@@ -103,7 +122,7 @@ def config():
     map_name = "mpe:SimpleSpeakerListener-v0"
     ex.add_config({"env_args": {"key": map_name}})
 
-@ex.automain
+@ex.main
 def main(_run, _config, _log, seed):
     params = deepcopy(sys.argv)
     th.set_num_threads(1)
@@ -134,26 +153,7 @@ def main(_run, _config, _log, seed):
     else:
         het_config = {'name': 'no het_config used'}
     """
-
-    # Save Sacred files to disk
-    unique_token = get_unique_dirname(_config['alg_yaml'], _config['map_name'])
-    logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
-    file_obs_path = os.path.join(results_path, f"sacred/{unique_token}")
-    ex.observers.append(FileStorageObserver.create(file_obs_path))
-
-    # saving to disk because MongoObserver requires the Docker image to be set
-    # up, which is hard
-    # https://sacred.readthedocs.io/en/stable/examples.html#docker-setup
-    # however, this is necessary to use Omniboard/other frontends
-    # Tensorboard is configured separately, doesn't provide full Sacred
-    # frontend but useful to see metrics/compare two runs
-    # - Kevin
-    #
-    # ex.observers.append(MongoObserver(db_name="marlbench")) #url='172.31.5.187:27017'))
-    # ex.observers.append(MongoObserver())
-
-    # Give run.py's run() the Sacred runner, config, and logging modules to run
-    # the experiment
+    
     run(_run, _config, _log)
 
     """
@@ -167,4 +167,12 @@ def main(_run, _config, _log, seed):
     """
 
 if __name__ == '__main__':
-    main()
+    
+    results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
+    unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
+    logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
+    file_obs_path = os.path.join(results_path, f"sacred/{unique_token}")
+    ex.observers.append(FileStorageObserver.create(file_obs_path))
+    
+    # main()
+    ex.run_commandline()
