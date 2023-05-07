@@ -36,9 +36,9 @@ name: "mappo"
 
 agent: "gnn"
 action_selector: "epsilon_greedy"
-epsilon_start: 0.10
-epsilon_finish: 0.001
-epsilon_anneal_time: 100000
+epsilon_start: 1.0
+epsilon_finish: 0.01
+epsilon_anneal_time: 50000
 evaluation_epsilon: 0.0
 
 t_max: 20050000
