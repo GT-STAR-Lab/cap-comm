@@ -81,6 +81,8 @@ def visualize(args):
         env_name = 'terrain_dependant_navigation'
     elif 'Search' in config.env_args['key']:
         env_name = 'search_and_capture'
+    elif 'SimpleS' in config.env_args['key']:
+        env_name = "simple_spread"
     
     env = make_env(env_name)
     if len(task_config) > 1:
