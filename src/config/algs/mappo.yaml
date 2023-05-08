@@ -34,11 +34,4 @@ epochs: 4
 eps_clip: 0.2
 name: "mappo"
 
-agent: "gnn"
-action_selector: "epsilon_greedy"
-epsilon_start: 0.10
-epsilon_finish: 0.001
-epsilon_anneal_time: 100000
-evaluation_epsilon: 0.0
-
-t_max: 20050000
+t_max: 2000000

@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.utils import dense_to_sparse
+from modules.encoder import REGISTRY as encoder_REGISTRY
 
 class GNNAgent(torch.nn.Module):
     def __init__(self, input_shape, args, training=True):
@@ -11,9 +12,12 @@ class GNNAgent(torch.nn.Module):
         self.training = training
         self.input_shape = input_shape
         self.message_passes = self.args.num_layers
-    
-        self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
-                                      nn.ReLU(inplace=True))
+
+        
+        # self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
+        #                               nn.ReLU(inplace=True))
+        self.encoder = encoder_REGISTRY[self.args.encoder](input_shape, self.args.hidden_dim, self.args.hidden_dim)
+
         if self.args.use_graph_attention:
             self.messages = nn.MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
         else:
