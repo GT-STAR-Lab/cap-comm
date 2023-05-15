@@ -24,7 +24,7 @@ checkpoint_path: "" # Load a checkpoint from this path
 evaluate: False # Evaluate model for test_nepisode episodes and quit (no training)
 load_step: 0 # Load model trained on this many timesteps (0 if choose max possible)
 save_replay: False # Saving the replay of the model loaded from checkpoint_path
-local_results_path: "results" # Path for local results
+local_results_path: "../results" # Path for local results
 
 # --- RL hyperparameters ---
 gamma: 0.99
@@ -54,3 +54,6 @@ use_graph_attention: False
 repeat_id: 1
 label: "default_label"
 hypergroup: null
+
+# ---- Debugging options ----
+detect_autograd_anomaly: False # uses the torch command to detect autograd anomlies; This can signficantly slow down training

@@ -153,7 +153,15 @@ def main(_run, _config, _log, seed):
     else:
         het_config = {'name': 'no het_config used'}
     """
-    
+
+    # detect anomlies in backward() for training torch networks (only do this for debuggin, can signficiantly
+    # slow down training)
+    if(_config["detect_autograd_anomaly"]):
+        th.autograd.set_detect_anomaly(True)
+
+    # Give run.py's run() the Sacred runner, config, and logging modules to run
+    # the experiment
+
     run(_run, _config, _log)
 
     """

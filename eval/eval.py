@@ -23,7 +23,7 @@ def load_files(args):
     config = open(args.run + '/config.json')
 
     config = DictView(json.load(config))
-    print(config.env_args)
+    print("Config", config.env_args)
 
     try:
         with open('../' + config.env_args['config_path'], 'r') as outfile:
@@ -44,10 +44,10 @@ def load_files(args):
     model_path = model_save[(model_save.find('to ') + 3):]
     model_path = model_path[:model_path.rfind("/")+1]
 
-    ckts = [int(re.sub("[^0-9]", "", ckt) if len(re.sub("[^0-9]", "", ckt)) > 0 else str(-1)) for ckt in os.listdir('../' + model_path)]
+    ckts = [int(re.sub("[^0-9]", "", ckt) if len(re.sub("[^0-9]", "", ckt)) > 0 else str(-1)) for ckt in os.listdir(model_path)]
     print('../' + model_path + str(max(ckts)) + '/agent.th')
 
-    params = torch.load('../' + model_path + str(max(ckts)) + '/agent.th',map_location=torch.device('cpu'))
+    params = torch.load(model_path + str(max(ckts)) + '/agent.th',map_location=torch.device('cpu'))
     print(params.keys())
     input_dim = params[list(params.keys())[0]].shape[1]
 
@@ -81,6 +81,8 @@ def visualize(args):
         env_name = 'terrain_dependant_navigation'
     elif 'Search' in config.env_args['key']:
         env_name = 'search_and_capture'
+    elif 'SimpleS' in config.env_args['key']:
+        env_name = "simple_spread"
     
     env = make_env(env_name)
     if len(task_config) > 1:

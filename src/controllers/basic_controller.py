@@ -40,8 +40,8 @@ class BasicMAC:
 
         #print(self.args.agent)
         avail_actions = ep_batch["avail_actions"][:, t]
-        if self.args.agent == "gnn":
-            agent_outs, self.hidden_states = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
+        if self.args.agent == "gnn" or self.args.agent == "gcn":
+            agent_outs, _ = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
         else:
             agent_outs, self.hidden_states = self.agent(agent_inputs, self.hidden_states)
 
@@ -87,8 +87,10 @@ class BasicMAC:
 
     def save_models(self, path):
         th.save(self.agent.state_dict(), "{}/agent.th".format(path))
+        th.save(self.agent, "{}/agent_model.pt".format(path))
         if self.args.separated_policy:
             th.save(self.gnn.state_dict(), "{}/gnn.th".format(path))
+            th.save(self.agent, "{}/gnn_model.pt".format(path))
 
     def load_models(self, path):
         self.agent.load_state_dict(th.load("{}/agent.th".format(path), map_location=lambda storage, loc: storage))
@@ -96,7 +98,10 @@ class BasicMAC:
   
     def _build_agents(self, input_shape):
         print(input_shape)
+        print("\033[31m" + self.args.agent + "\033[0m")
+
         self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
+        print("\033[31m" + str(type(self.agent)) + "\033[0m")
 
     def _build_comm(self, input_shape):
         self.gnn = comm_REGISTRY[self.args.gnn](input_shape, self.args)
