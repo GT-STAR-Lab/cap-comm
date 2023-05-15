@@ -9,7 +9,7 @@ class GCNComm(torch.nn.Module):
         self.args = args
         self.training = training
         self.convs = []
-        print(input_shape)
+        # print(input_shape)
         print(self.args.msg_hidden_dim)
         self.convs.append(GCNConv(input_shape, self.args.msg_hidden_dim))
         for i in range(1, self.args.num_layers-1):
@@ -26,7 +26,6 @@ class GCNComm(torch.nn.Module):
         x_out = []
 
         for x_in, am_in in zip(torch.unbind(x, dim=0), torch.unbind(adj_matrix, dim=0)):
-            print(x_in.shape)
             for i in range(self.args.num_layers):
                 x_in = self.convs[i](x_in, dense_to_sparse(am_in)[0])
                 if (i+1)<self.args.num_layers:

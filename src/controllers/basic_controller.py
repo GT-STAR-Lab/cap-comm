@@ -1,7 +1,9 @@
 from modules.agents import REGISTRY as agent_REGISTRY
 from components.action_selectors import REGISTRY as action_REGISTRY
 from communication import REGISTRY as comm_REGISTRY
+from modules.critics import REGISTRY as critic_resigtry
 import torch as th
+from torchsummary import summary
 
 
 # This multi-agent controller shares parameters between agents
@@ -10,10 +12,13 @@ class BasicMAC:
         self.n_agents = args.n_agents
         self.args = args
         input_shape = self._get_input_shape(scheme)
+        self.scheme = scheme
 
         if self.args.separated_policy:
             self._build_comm(input_shape)
             self._build_agents(self.args.msg_out_size)
+            # build the critic
+            self._build_critic(self.args.msg_out_size)
         else:
             self._build_agents(input_shape)
 
@@ -31,17 +36,25 @@ class BasicMAC:
         return chosen_actions
 
     def forward(self, ep_batch, t, test_mode=False):
-        #print(ep_batch['obs'].shape)
-        # if self.args.separated_policy:
-        #     comm_input = self._build_inputs(ep_batch, t)
-        #     agent_inputs = self._build_msg(comm_input, ep_batch.batch_size, ep_batch["adj_matrix"][:, t, ...], ep_batch.device)# self._build_inputs(ep_batch, t)
-        # else:
-        agent_inputs = self._build_inputs(ep_batch, t)
+        # print(ep_batch['obs'].shape)
+        
+        # Build the communication outputs from the gnn, which are inputs to both actor and critic
+        if self.args.separated_policy:
+            comm_input = self._build_inputs(ep_batch, t)
+            agent_inputs = self._build_msg(comm_input, ep_batch.batch_size, ep_batch["adj_matrix"][:, t, ...], ep_batch.device)# self._build_inputs(ep_batch, t)
+        else:
+            agent_inputs = self._build_inputs(ep_batch, t)
 
-        #print(self.args.agent)
+        
         avail_actions = ep_batch["avail_actions"][:, t]
+
+        # use this if just the actor is a gnn.
         if self.args.agent == "gnn" or self.args.agent == "gcn":
             agent_outs, _ = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
+        
+        # use gnn has the gnn as the comm layer, and mlps for both actor and critic. (like GPPO)
+        elif self.args.use_gnn:
+            agent_outs, _ = self.agent(agent_inputs)
         else:
             agent_outs, self.hidden_states = self.agent(agent_inputs, self.hidden_states)
 
@@ -97,16 +110,30 @@ class BasicMAC:
         self.gnn.load_state_dict(th.load("{}/gnn.th".format(path), map_location=lambda storage, loc: storage))
   
     def _build_agents(self, input_shape):
-        print(input_shape)
+        """
+        Agent is the actor portion of the policy
+        """
         print("\033[31m" + self.args.agent + "\033[0m")
-
+        print("Agent input size: ", input_shape, self.args)
         self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
+        summary(self.agent, input_size=input_shape)
         print("\033[31m" + str(type(self.agent)) + "\033[0m")
 
+    def _build_critic(self, input_shape):
+        """
+        Critic network
+        """
+        print("\033[31m" + self.args.critic_type + "\033[0m")
+        self.critic = critic_resigtry[self.args.critic_type](self.scheme, self.args)
+
     def _build_comm(self, input_shape):
-        self.gnn = comm_REGISTRY[self.args.gnn](input_shape, self.args)
+        self.gnn = comm_REGISTRY["gcn"](input_shape, self.args)
+        # self.gnn = agent_REGISTRY["gnn"](input_shape, self.args)
 
     def _build_msg(self, batch, batch_size, adj_matrix, device):
+        """
+        If the gnn is used to feed to both the actor and critic, it goes here
+        """
         input_observation = batch.reshape(batch_size, self.n_agents, -1).to(device=device)
         msg_enc = self.gnn(input_observation, th.tensor(adj_matrix, device=device))
         reshaped_msg_enc = msg_enc.reshape(batch_size * self.n_agents, -1)
