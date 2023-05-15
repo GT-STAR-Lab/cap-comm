@@ -1,21 +1,22 @@
 #!/bin/bash
 
+if [ $# -eq 0 ]; then
+    >&2 echo "ERROR: No arguments provided"
+    exit 1
+fi
+
+scenario=$1
+echo Executing Experiment 1: agent-id vs capability-aware on scenario $scenario
+
 proj_dir=$(find ~ -name "ca-gnn-marl")
-echo $proj_dir
 cd $proj_dir
 
-# start 3 randomized experiments at once (Sacred saves logfiles individually)
-# TODO: buggy, can't end all 3 with CTRL-C
-# (can use pkill python3 as hack)
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" &
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" &
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" &
+echo Please ensure that ca-gnn-marl/Heterogeneous-MARL-CA/$scenario/config.yaml \
+has the right fields set for agent-id/capability awareness
 
-# ignore
-# logfile_root_name="scripts/experiment1"
-# python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-# env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" \
-# 2>&1 | tee $logfile_root_name"_run1.log" 
+# echo Hit enter to start
+# read any
+
+# run experiments, w/ same settings, in sequence
+python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
+env_args.time_limit=100 env_args.key=$scenario

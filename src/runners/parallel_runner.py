@@ -19,12 +19,17 @@ class ParallelRunner:
 
         # Make subprocesses for the envs
         self.parent_conns, self.worker_conns = zip(*[Pipe() for _ in range(self.batch_size)])
-        env_fn = env_REGISTRY[self.args.env]
         env_args = [self.args.env_args.copy() for _ in range(self.batch_size)]
         for i in range(self.batch_size):
             env_args[i]["seed"] += i
 
-        self.ps = [Process(target=env_worker, args=(worker_conn, CloudpickleWrapper(partial(env_fn, **env_arg))))
+        env_fn = env_REGISTRY[self.args.env]
+        for env_arg in env_args:
+            print(partial(env_fn, **env_arg))
+
+        self.ps = [Process(target=env_worker, args=(worker_conn,
+                                                    CloudpickleWrapper(partial(env_fn,
+                                                                               **env_arg))))
                             for env_arg, worker_conn in zip(env_args, self.worker_conns)]
 
         for p in self.ps:
@@ -230,6 +235,11 @@ def env_worker(remote, env_fn):
             actions = data
             # Take a step in the environment
             reward, terminated, env_info = env.step(actions)
+
+            for k, v in env_info.items():
+                print(k, V)
+                print("TEMP"*10)
+
             # Return the observations, avail_actions and state to make the next action
             state = env.get_state()
             avail_actions = env.get_avail_actions()

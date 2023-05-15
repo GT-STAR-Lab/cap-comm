@@ -81,13 +81,19 @@ class _GymmaWrapper(MultiAgentEnv):
         self.episode_limit = time_limit
     
         self._env = TimeLimit(gym.make(f"{key}"), max_episode_steps=time_limit)
-        if (kwargs['config_path'] is not None) and len(kwargs['config_path']) > 0:
-            with open(kwargs['config_path'], 'r') as outfile:
-                task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
-            self._env.set_config(config=task_config) # Adds config file for environment AND resets the obseration space
+
+        print("Setting task args")
+        for k, v in kwargs['task_args'].items():
+            print(k, v)
+            print(self._env.env)
+            setattr(self._env.env, k, v)
+
+        # if (kwargs['config_path'] is not None) and len(kwargs['config_path']) > 0:
+        #     with open(kwargs['config_path'], 'r') as outfile:
+        #         task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
+        #     self._env.set_config(config=task_config) # Adds config file for environment AND resets the obseration space
         #self._env.update_observation_space()
         self._env = FlattenObservation(self._env)
-
 
         if pretrained_wrapper:
             self._env = getattr(pretrained, pretrained_wrapper)(self._env)

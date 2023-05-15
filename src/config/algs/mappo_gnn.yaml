@@ -6,11 +6,16 @@ mask_before_softmax: True
 runner: "parallel"
 
 buffer_size: 10
-batch_size_run: 10
-batch_size: 10
+batch_size_run: 1
+batch_size: 1
 
+# NOTE: env_args is not args for the Gym env, but rather args for epymarl to run envs internally
 env_args:
   state_last_action: False # critic adds last action internally
+  # task_args is what you would expect, args that affect the task environment
+  task_args:
+    capability_aware: True
+
 
 # update the target network every {} training steps
 target_update_interval_or_tau: 200
@@ -44,4 +49,4 @@ epsilon_finish: 0.01
 epsilon_anneal_time: 10000
 evaluation_epsilon: 0.0
 
-t_max: 2000000
+t_max: 100

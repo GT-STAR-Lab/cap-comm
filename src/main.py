@@ -118,7 +118,7 @@ def config():
     ex.add_config(get_config_filepath(env_yaml, "envs"))
     ex.add_config(get_config_filepath(alg_yaml, "algs"))
 
-    # Inject map_name into env_args
+    # Inject map_name into env_args (usually overwritten by CLI)
     map_name = "mpe:SimpleSpeakerListener-v0"
     ex.add_config({"env_args": {"key": map_name}})
 
