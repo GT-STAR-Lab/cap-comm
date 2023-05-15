@@ -224,12 +224,19 @@ class ParallelRunner:
 def env_worker(remote, env_fn):
     # Make environment
     env = env_fn.x()
+    last_env_info = None
     while True:
         cmd, data = remote.recv()
         if cmd == "step":
             actions = data
             # Take a step in the environment
             reward, terminated, env_info = env.step(actions)
+            # log info on change or termination
+            if last_env_info != env_info or terminated:
+                if terminated: print("terminated")
+                last_env_info = env_info
+                print("info", env_info)
+
             # Return the observations, avail_actions and state to make the next action
             state = env.get_state()
             avail_actions = env.get_avail_actions()
