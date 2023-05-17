@@ -6,8 +6,8 @@ mask_before_softmax: True
 runner: "parallel"
 
 buffer_size: 10
-batch_size_run: 32
-batch_size: 10
+batch_size_run: 64
+batch_size: 64
 
 env_args:
   state_last_action: False # critic adds last action internally
