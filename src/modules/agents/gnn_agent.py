@@ -30,9 +30,6 @@ class GNNAgent(torch.nn.Module):
 
         self.actions = nn.Linear(self.args.hidden_dim, self.args.n_actions)
 
-
-
-
     def cuda_transfer(self):
         for i in range(self.args.num_layers):
             self.convs[i].cuda()

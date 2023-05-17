@@ -4,9 +4,11 @@ from modules.critics.coma import COMACritic
 from modules.critics.centralV import CentralVCritic
 from utils.rl_utils import build_td_lambda_targets
 import torch as th
+from torch import nn
 from torch.optim import Adam
 from modules.critics import REGISTRY as critic_resigtry
 from components.standarize_stream import RunningMeanStd
+from torchsummary import summary
 
 
 class PPOLearner:
@@ -21,8 +23,16 @@ class PPOLearner:
         self.agent_params = list(mac.parameters())
         self.agent_optimiser = Adam(params=self.agent_params, lr=args.lr)
 
-        self.critic = critic_resigtry[args.critic_type](scheme, args)
+        if(args.use_gnn):
+            self.critic = self.mac.critic
+        else:
+            self.critic = critic_resigtry[args.critic_type](scheme, args)
+
         self.target_critic = copy.deepcopy(self.critic)
+
+        # print a summary of the critic
+        # print("Summary of the critic network")
+        # summary(self.critic, input_shape=args.input_shape)
 
         self.critic_params = list(self.critic.parameters())
         self.critic_optimiser = Adam(params=self.critic_params, lr=args.lr)
