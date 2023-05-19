@@ -11,6 +11,8 @@ import numpy as np
 from gym.wrappers import TimeLimit as GymTimeLimit
 import time
 import yaml
+
+# this function builds a class env (type MultiAgentEnv) with keyworld argument **kwargs.
 def env_fn(env, **kwargs) -> MultiAgentEnv:
     return env(**kwargs)
 
@@ -117,8 +119,12 @@ class _GymmaWrapper(MultiAgentEnv):
             )
             for o in self._obs
         ]
+        
+        if('n' in info.keys()):
+            return float(sum(reward)), all(done), {}
+        else:
+            return float(sum(reward)), all(done), info
 
-        return float(sum(reward)), all(done), {}
 
     def get_obs(self):
         """ Returns all agent observations in a list """
