@@ -45,7 +45,7 @@ separated_policy: True # make the gnn for comm separate from the action network.
 action_selector: "epsilon_greedy"
 epsilon_start: 1.0
 epsilon_finish: 0.01
-epsilon_anneal_time: 10000
+epsilon_anneal_time: 500000
 evaluation_epsilon: 0.0
 
 t_max: 20050000

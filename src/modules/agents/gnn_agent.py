@@ -80,6 +80,7 @@ class GNNAgent(torch.nn.Module):
         
         # passess the agents embedded encoding to the policy head.
         msg = msg.view(-1, self.args.hidden_dim) # shape is (batch_size * N, self.args.hidden_dim)
+        # print("Message shape", msg.shape, "Encoding shape", enc.shape)
         if self.message_passes > 0:
             h = torch.cat((enc,msg), dim=-1)
         else:
