@@ -23,6 +23,11 @@ class GCNComm(torch.nn.Module):
             print('\n\n\n\n\nTRANFERED TO GPUUUU')
 
     def forward(self, x, adj_matrix):
+        """
+        params:
+        x (tensor): Size [batch_size, n_agents, obs_shape]
+        adj_matrix: Size [batch_size, n_agents, n_agents]
+        """
         x_out = []
 
         for x_in, am_in in zip(torch.unbind(x, dim=0), torch.unbind(adj_matrix, dim=0)):
