@@ -6,14 +6,14 @@ mask_before_softmax: True
 runner: "parallel"
 
 buffer_size: 10
-batch_size_run: 2
-batch_size: 2
+batch_size_run: 64
+batch_size: 64
 
 env_args:
   state_last_action: False # critic adds last action internally
 
 # update the target network every {} training steps
-target_update_interval_or_tau: 5
+target_update_interval_or_tau: 200
 
 lr: 0.0005
 
@@ -26,10 +26,6 @@ learner: "ppo_learner"
 entropy_coef: 0.01
 use_rnn: False
 use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
-agent: "gat"
-msg_hidden_dim: 64
-n_heads: 2
-use_graph_attention: False
 standardise_returns: True
 standardise_rewards: False
 q_nstep: 5 # 1 corresponds to normal r + gammaV
@@ -38,20 +34,15 @@ epochs: 4
 eps_clip: 0.2
 name: "mappo"
 
+agent: "gat"
+msg_hidden_dim: 64
+n_heads: 1
+encoder: "mlp" # default to mlp, gru takes much longer to train
 
 action_selector: "epsilon_greedy"
-epsilon_start: 0.10
+epsilon_start: 1.0
 epsilon_finish: 0.01
-epsilon_anneal_time: 1000
+epsilon_anneal_time: 50000
 evaluation_epsilon: 0.0
 
-detect_autograd_anomaly: True
-
-# Testing options
-test_greedy: True
-test_nepisode: 2
-test_interval: 1
-log_interval: 1
-runner_log_interval: 1
-learner_log_interval: 1
-t_max: 10000
+t_max: 2000000

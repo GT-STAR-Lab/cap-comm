@@ -49,7 +49,7 @@ class BasicMAC:
         avail_actions = ep_batch["avail_actions"][:, t]
 
         # use this if just the actor is a gnn.
-        if self.args.agent == "gnn" or self.args.agent == "gcn":
+        if self.args.agent == "gnn" or self.args.agent == "gat":
             agent_outs, _ = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
         
         # use gnn has the gnn as the comm layer, and mlps for both actor and critic. (like GPPO)

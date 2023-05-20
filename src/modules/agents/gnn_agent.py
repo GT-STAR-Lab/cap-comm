@@ -55,6 +55,7 @@ class GNNAgent(torch.nn.Module):
         return torch.matmul(torch.matmul(D_hat, A_hat), D_hat)
 
     def forward(self,x, adj_matrix):
+        print(x.shape, adj_matrix.shape)
         # inp should be (batch_size,input_size)
         # inp - {iden, vel(2), pos(2), entities(...)}
 
