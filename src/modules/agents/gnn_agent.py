@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.utils import dense_to_sparse
 from modules.encoder import REGISTRY as encoder_REGISTRY
+import sys
 
 class GNNAgent(torch.nn.Module):
     def __init__(self, input_shape, args, training=True):
@@ -14,9 +15,9 @@ class GNNAgent(torch.nn.Module):
         self.message_passes = self.args.num_layers
 
         
-        # self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
-        #                               nn.ReLU(inplace=True))
-        self.encoder = encoder_REGISTRY[self.args.encoder](input_shape, self.args.hidden_dim, self.args.hidden_dim)
+        self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
+                                      nn.ReLU(inplace=True))
+        # self.encoder = encoder_REGISTRY[self.args.encoder](input_shape, self.args.hidden_dim, self.args.hidden_dim)
 
         if self.args.use_graph_attention:
             self.messages = nn.MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
@@ -55,13 +56,17 @@ class GNNAgent(torch.nn.Module):
         return torch.matmul(torch.matmul(D_hat, A_hat), D_hat)
 
     def forward(self,x, adj_matrix):
-        print(x.shape, adj_matrix.shape)
+        
         # inp should be (batch_size,input_size)
         # inp - {iden, vel(2), pos(2), entities(...)}
 
 
-        # Get the Normalized adjacency matrix       
-        comm_mat = self.calc_adjacency_hat(adj_matrix)
+        # Get the Normalized adjacency matrix, and add self-loops  
+        if(self.args.normalize_adj_matrix):     
+            comm_mat = self.calc_adjacency_hat(adj_matrix)
+        else:
+            comm_mat = adj_matrix.float()
+        
         #comm_mat = comm_mat#.unsqueeze #(0).repeat(batch_size,1,1)
        
         # comm_mat - {batch_size, N, N}

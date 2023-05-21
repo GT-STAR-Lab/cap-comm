@@ -26,7 +26,7 @@ learner: "ppo_learner"
 entropy_coef: 0.01
 use_rnn: False
 use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
-agent: "gat"
+agent: "gnn"
 msg_hidden_dim: 64
 n_heads: 2
 use_graph_attention: False

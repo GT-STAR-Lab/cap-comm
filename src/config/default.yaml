@@ -42,13 +42,14 @@ use_gnn: False
 hidden_dim: 64 # Size of hidden state for default rnn agent
 obs_agent_id: False # Include the agent's one_hot id in the observation
 obs_last_action: False # Include the agent's last action (one_hot) in the observation
-num_layers: 0
+num_layers: 1
 msg_hidden_dim: 64
 msg_out_size: 16
 agent_dist: False # Edge connection based on distance between agents
 unit_type: False # Edege connection for agents of same type
 separated_policy: False
 use_graph_attention: False
+normalize_adj_matrix: False
 ## Add more heuristics
 
 # --- Experiment running params ---
