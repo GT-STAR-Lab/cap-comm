@@ -13,9 +13,10 @@ class GATAgent(nn.Module):
         n_heads = self.args.n_heads
         n_actions = self.args.n_actions
         
-    
+        self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
+                                      nn.ReLU(inplace=True))
 
-        self.attentions = [GraphAttentionLayer(input_shape, msg_hidden_dim, args, dropout=dropout, alpha=alpha, concat=True) for _ in range(n_heads)]
+        self.attentions = [GraphAttentionLayer(self.args.hidden_dim, msg_hidden_dim, args, dropout=dropout, alpha=alpha, concat=True) for _ in range(n_heads)]
         for i, attention in enumerate(self.attentions):
             self.add_module('attention_{}'.format(i), attention)
 
@@ -29,6 +30,8 @@ class GATAgent(nn.Module):
 
     def forward(self, x, adj):
         B, N, N = adj.shape
+        # print(x.shape)
+        x = self.encoder(x)
         x = x.view(B, N, x.shape[1])
         x = F.dropout(x, self.dropout, training=self.training)
         x = torch.cat([att(x, adj) for att in self.attentions], dim=-1)
