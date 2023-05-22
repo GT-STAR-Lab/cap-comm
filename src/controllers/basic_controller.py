@@ -107,7 +107,8 @@ class BasicMAC:
 
     def load_models(self, path):
         self.agent.load_state_dict(th.load("{}/agent.th".format(path), map_location=lambda storage, loc: storage))
-        self.gnn.load_state_dict(th.load("{}/gnn.th".format(path), map_location=lambda storage, loc: storage))
+        if self.args.separated_policy:
+            self.gnn.load_state_dict(th.load("{}/gnn.th".format(path), map_location=lambda storage, loc: storage))
   
     def _build_agents(self, input_shape):
         """
