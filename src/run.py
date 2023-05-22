@@ -160,7 +160,11 @@ def run_sequential(args, logger):
 
         logger.console_logger.info("Loading model from {}".format(model_path))
         learner.load_models(model_path)
-        runner.t_env = timestep_to_load
+
+        if args.restart_from_pretrained:
+            runner.t_env = 0
+        else:
+            runner.t_env = timestep_to_load
 
         if args.evaluate or args.save_replay:
             runner.log_train_stats_t = runner.t_env
