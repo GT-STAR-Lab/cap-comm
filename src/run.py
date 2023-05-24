@@ -39,7 +39,8 @@ def run(_run, config, _log):
         map_name = _config["env_args"]["map_name"]
     except:
         map_name = _config["env_args"]["key"]   
-    unique_token = get_unique_dirname(_config['name'], map_name)
+    # unique_token = get_unique_dirname(_config['name'], map_name)
+    unique_token = os.path.join(map_name, config["unique_token"])
 
     args.unique_token = unique_token
     if args.use_tensorboard:
