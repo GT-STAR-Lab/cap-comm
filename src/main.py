@@ -186,9 +186,9 @@ if __name__ == '__main__':
     unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
     ex.add_config(unique_token=unique_token)
     
-    sys.argv.append(f"-i {unique_token}") # set the id of the experiment to be the time it was ran. This matches with tensorboard
+    # sys.argv.append(f"-i {unique_token}") # set the id of the experiment to be the time it was ran. This matches with tensorboard
     
-    logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
+    # logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
     
     ex.observers.append(FileStorageObserver(os.path.join(results_path, "sacred_runs", map_name))) # save experiments based on the environment
     
