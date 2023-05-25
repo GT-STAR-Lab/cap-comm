@@ -9,25 +9,19 @@ echo Please ensure the config settings for agent-id/capability-awareness in \
 echo Enter to continue
 read temp
 
+python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
+env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=9976
 
-for exp_num in 1 .. 3
-do
-        echo -----------------------------------------------------------------
-        echo Running experiment 1, seed $exp_num \(see Sacred for true seed\)
-        
-        ### mappo_gnn robotarium
-        # python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-        # env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0"
+python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
+env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=6047
 
-        ### mappo_gat robotarium
-        python3 src/main.py with alg_yaml=mappo_gat env_yaml=gymma \
-        env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0"
+python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
+env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=4126
+
+# for exp_num in 1 .. 3
+# do
+#         echo -----------------------------------------------------------------
+#         echo Running experiment 1, seed $exp_num \(see Sacred for true seed\)
         
-        ### mappo_gnn simplespread
-        # python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-        # env_args.time_limit=100 env_args.key="mpe:SimpleSpread-v0"
         
-        ### ippo_gnn (GPPO) simplespread
-        #python3 src/main.py with alg_yaml=ippo_gnn env_yaml=gymma \
-        #env_args.time_limit=100 env_args.key="mpe:SimpleSpread-v0"
-done
+# done

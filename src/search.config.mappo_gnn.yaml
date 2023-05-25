@@ -1,0 +1,48 @@
+exclude: null
+grid-search:
+
+  lr:
+    - 0.0005
+    - 0.00005
+
+  standardise_rewards:
+    - True
+    - False
+
+  use_rnn:
+    - False
+  agent:
+    - "gnn"
+
+  target_update_interval_or_tau:
+    - 200
+    - 0.01
+
+  hidden_dim:
+    - 64
+
+  entropy_coef:
+    - 0.01
+    - 0.001
+
+  q_nstep:
+    - 5
+  t_max:
+    - 4000000
+  test_nepisode:
+    - 100
+  test_interval:
+    - 25000
+  log_interval:
+    - 25000
+  save_model_interval:
+    - 50000
+  save_model:
+    - true
+    
+grid-search-groups:
+  env0:
+    - env_args.key: robotarium_gym:PredatorCapturePreyGNN-v0
+    - env_args.time_limit: 1000
+    - alg_yaml: "mappo_gnn"
+    - env_yaml: "gymma"
