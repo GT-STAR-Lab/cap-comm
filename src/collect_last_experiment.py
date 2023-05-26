@@ -45,6 +45,14 @@ if __name__ == "__main__":
     shutil.copytree(modules_dir, dest_dir, copy_function=shutil.copy)
 
     # copy the results directory
+    item = "results"
+    dest_dir = os.path.join(output_dir, item)
+    results_dir = os.path.join(current_dir, "..", item)
+    shutil.copytree(results_dir, dest_dir, copy_function=shutil.copy)
+
+    out = input("Would you like to delete the results current in the followig directory [y/N]:\n %s " % (results_dir))
+    if(out == "y"):
+        shutil.rmtree(results_dir)
 
     # copy the scenario directory
     item = os.path.join("Heterogeneous-MARL-CA", "robotarium_gym", "scenarios")
