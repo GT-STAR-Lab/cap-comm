@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.utils import dense_to_sparse
-from modules.encoder import REGISTRY as encoder_REGISTRY
 import sys
 
 class GNNAgent(torch.nn.Module):
