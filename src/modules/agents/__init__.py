@@ -9,5 +9,5 @@ REGISTRY["rnn"] = RNNAgent
 REGISTRY["rnn_ns"] = RNNNSAgent
 REGISTRY["mlp"] = MLPAgent
 REGISTRY["gnn"] = GNNAgent
-REGISTRY["dual_gnn"] = DualChannelGNNAgent
+REGISTRY["dual_channel_gnn"] = DualChannelGNNAgent
 REGISTRY["gat"] = GATAgent

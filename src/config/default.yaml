@@ -51,6 +51,7 @@ unit_type: False # Edege connection for agents of same type
 separated_policy: False
 use_graph_attention: False
 normalize_adj_matrix: False
+capability_shape: 2 # the shape of the capability vector (# of dimensions). Only used for dual channel models
 ## Add more heuristics
 
 # --- Experiment running params ---
