@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    output_dir = os.path.join(current_dir, "..", "experiment_copies", args.name)
+    output_dir = os.path.join(current_dir, "..", "..", "experiment_copies", args.name)
     
     unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
     output_dir += "_" + unique_token
