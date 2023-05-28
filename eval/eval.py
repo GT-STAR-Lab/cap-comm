@@ -20,11 +20,13 @@ def load_files(args):
         def __init__(self, d):
             self.__dict__ = d
 
+    # loads the experiment configuration from sacred
     config = open(args.run + '/config.json')
 
     config = DictView(json.load(config))
     print("Config", config.env_args)
 
+    # Open the task configuration if it exists
     try:
         with open('../' + config.env_args['config_path'], 'r') as outfile:
             task_config = yaml.load(outfile, Loader=yaml.SafeLoader)
@@ -32,6 +34,7 @@ def load_files(args):
         print("Warning: cannot open the task config file, running without one")
         task_config = {}
 
+    # Find where the model is saved to in a very adhoc manner. This is brittle
     config.n_actions = 5
     cout = open(args.run + '/cout.txt')
     cout = cout.readlines()
@@ -40,17 +43,18 @@ def load_files(args):
         if 'Saving models to' in line:
             model_save = line
             break
-
+    
     model_path = model_save[(model_save.find('to ') + 3):]
     model_path = model_path[:model_path.rfind("/")+1]
-
+    model_path = os.path.join("..", model_path)
     ckts = [int(re.sub("[^0-9]", "", ckt) if len(re.sub("[^0-9]", "", ckt)) > 0 else str(-1)) for ckt in os.listdir(model_path)]
     print('../' + model_path + str(max(ckts)) + '/agent.th')
 
     params = torch.load(model_path + str(max(ckts)) + '/agent.th',map_location=torch.device('cpu'))
     print(params.keys())
     input_dim = params[list(params.keys())[0]].shape[1]
-
+    for k in params.keys():
+        print(k, params[k].shape)
 
     if config.agent=='mlp':
         model = MLPAgent(input_dim, config)
@@ -74,7 +78,7 @@ def visualize(args):
     if 'Transport' in config.env_args['key']:
         env_name = 'heterogeneous_material_transport'
     elif 'Network' in config.env_args['key']:
-        env_name = 'heterogeneous_sensor_network'
+        env_name = 'heterogeneous_sensor_network_ca'
     elif 'AwareNavigation' in config.env_args['key']:
         env_name = 'terrain_aware_navigation'
     elif 'DependantNavigation' in config.env_args['key']:
@@ -89,7 +93,7 @@ def visualize(args):
         env.set_config(config=task_config)
 
     obs = env.reset()
-
+    print(obs)
     # env.render()
     n_agents = len(obs)
     model.args.n_agents = n_agents
