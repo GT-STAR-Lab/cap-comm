@@ -116,7 +116,7 @@ class BasicMAC:
         """
         print("\033[31m" + self.args.agent + "\033[0m")
         self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
-        summary(self.agent, input_size=input_shape)
+        # summary(self.agent, input_size=input_shape)
         print("\033[31m" + str(type(self.agent)) + "\033[0m")
 
     def _build_critic(self, input_shape):
