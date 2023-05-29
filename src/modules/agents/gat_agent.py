@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class GATAgent(nn.Module):
-    def __init__(self, input_shape, args, dropout=0.0, alpha=0.2):
+    def __init__(self, input_shape, args, dropout=0.0, alpha=0.2, training=True):
         """Dense version of GAT."""
         super(GATAgent, self).__init__()
         self.args = args
@@ -12,6 +12,7 @@ class GATAgent(nn.Module):
         msg_hidden_dim = args.msg_hidden_dim
         n_heads = self.args.n_heads
         n_actions = self.args.n_actions
+        self.message_passes = self.args.num_layers
         
         self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
                                       nn.ReLU(inplace=True))
@@ -21,8 +22,10 @@ class GATAgent(nn.Module):
             self.add_module('attention_{}'.format(i), attention)
 
         # self.out_att = GraphAttentionLayer(msg_hidden_dim * n_heads, n_actions, args, dropout=dropout, alpha=alpha, concat=False)
-        
-        self.actions = nn.Linear(msg_hidden_dim * n_heads, n_actions)
+
+        self.policy_head = nn.Sequential(nn.Linear(msg_hidden_dim * n_heads if self.message_passes > 0 else self.args.hidden_dim, self.args.hidden_dim),
+                                         nn.ReLU(inplace=True))
+        self.actions = nn.Linear(self.args.hidden_dim, n_actions)
     
     def init_hidden(self):
         # make hidden states on same device as model
@@ -39,9 +42,52 @@ class GATAgent(nn.Module):
         # x = F.elu(self.out_att(x, adj))
         # return F.log_softmax(x, dim=1)
         x = x.view(-1, x.shape[-1])
-        x = self.actions(x)
-        return x, None
+        h = self.policy_head(x)
+        actions = self.actions(h)
+        return actions, h
 
+class DualChannelGATAgent(torch.nn.Module):
+    """
+    Dual Channel gnn (Agents that have two types of observations which they want to learn to communicate separately)
+    """
+    def __init__(self, input_shape, args, training=True):
+        """
+        """
+        super(DualChannelGATAgent, self).__init__()
+        self.args = args
+        self.capability_shape = self.args.capability_shape
+        self.input_shape_a = input_shape - self.capability_shape
+        self.channel_A = GATAgent(self.input_shape_a, args=args, training=training)
+        self.channel_B = GATAgent(self.capability_shape, args=args, training=training)
+
+        self.actions = nn.Linear(2*self.args.hidden_dim, self.args.n_actions)
+
+    def init_hidden(self):
+        # make hidden states on same device as model
+        self.channel_A.init_hidden()
+        self.channel_B.init_hidden()
+        return torch.zeros(self.args.hidden_dim) #self.encoder.weight.new(1, self.args.hidden_dim).zero_()
+
+    def forward(self, x, adj_matrix):
+        """
+        Forward the two inputs to each channel and adjacency matrix
+        through the model
+
+        params:
+            x tensor
+        returns:
+            action (tensor)
+            h (tensor) : concatenation of the two gnn outputs.
+        """
+        x_a = x[:, :self.input_shape_a]
+        x_b = x[:, self.input_shape_a:] # should be the capabilities
+        _, h_a = self.channel_A(x_a, adj_matrix)
+        _, h_b = self.channel_B(x_b, adj_matrix)
+
+        h = torch.concat((h_a, h_b), dim=-1)
+        action = self.actions(h)
+        return(action, h)
+    
 class GraphAttentionLayer(nn.Module):
     """
     Simple GAT layer, similar to https://arxiv.org/abs/1710.10903
