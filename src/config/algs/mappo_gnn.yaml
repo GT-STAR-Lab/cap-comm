@@ -23,7 +23,7 @@ obs_individual_obs: False
 
 agent_output_type: "pi_logits"
 learner: "ppo_learner"
-entropy_coef: 0.001
+entropy_coef: 0.01
 use_rnn: False
 use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
 standardise_returns: False
@@ -46,7 +46,7 @@ encoder: "mlp" # default to mlp, gru takes much longer to train
 
 t_max: 20050000
 
-# checkpoint_path: "/home/dwalkerhowell3/star_lab/ca-gnn-marl/results/models/2023-05-22:11-18-33-AM__mappo__robotarium_gym:PredatorCapturePreyGNN-v0"
+# checkpoint_path: "/home/dwalkerhowell3/star_lab/experiment_copies/gnn_robotarium_hsn_test_2_agents_2023-05-29:11-33-46-PM/results/models/robotarium_gym:HeterogeneousSensorNetwork-v0/2023-05-29:05-04-32-PM/13"
 # load_step: 0
 # evaluate: False
 # restart_from_pretrained: True
