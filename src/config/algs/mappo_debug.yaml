@@ -3,11 +3,11 @@
 action_selector: "soft_policies"
 mask_before_softmax: True
 
-runner: "parallel"
+runner: "episode"
 
-buffer_size: 10
-batch_size_run: 2
-batch_size: 2
+buffer_size: 1
+batch_size_run: 1
+batch_size: 1
 
 env_args:
   state_last_action: False # critic adds last action internally
@@ -23,10 +23,10 @@ obs_individual_obs: False
 
 agent_output_type: "pi_logits"
 learner: "ppo_learner"
-entropy_coef: 0.01
+entropy_coef: 0.001
 use_rnn: False
 use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
-agent: "gnn"
+agent: "rnn"
 msg_hidden_dim: 64
 n_heads: 2
 use_graph_attention: False

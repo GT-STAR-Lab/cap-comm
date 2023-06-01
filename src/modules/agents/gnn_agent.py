@@ -22,7 +22,8 @@ class GNNAgent(torch.nn.Module):
             self.messages = nn.MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
         else:
             self.messages = nn.Sequential(nn.Linear(self.args.msg_hidden_dim,self.args.msg_hidden_dim, bias=False),
-                                     nn.ReLU(inplace=True))
+                                     nn.ReLU(inplace=True),
+                                     nn.Linear(self.args.msg_hidden_dim,self.args.msg_hidden_dim, bias=False))
 
 
         self.policy_head = nn.Sequential(nn.Linear(self.args.msg_hidden_dim + self.args.hidden_dim if self.message_passes > 0 else self.args.hidden_dim, self.args.hidden_dim),
