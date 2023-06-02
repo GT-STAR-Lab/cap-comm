@@ -37,6 +37,8 @@ if __name__ == "__main__":
     agent_module_dir = os.path.join(args.experiment_dir, "modules", "agents")
     if config_data["agent"] == "gnn":
         agent_module = os.path.join(agent_module_dir, "gnn_agent.py")
+    elif config_data["agent"] == "dual_channel_gnn":
+        agent_module = os.path.join(agent_module_dir, "gnn_agent.py")
 
     # package the weights, agent file, and config into a single directory called model
     model_dir = os.path.join(robotarium_scenario_dir, "models")
@@ -48,7 +50,7 @@ if __name__ == "__main__":
     # Copy files into "model" directory
     shutil.copy2(run_config_file, model_dir)
     shutil.copy2(model_weights, model_dir)
-    shutil.copy2(agent_module, model_dir)
+    # shutil.copy2(agent_module, model_dir)
 
     # copy config.yaml to model directory
     robotarium_env_config = os.path.join(args.experiment_dir, "Heterogeneous-MARL-CA", 

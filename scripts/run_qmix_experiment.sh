@@ -9,14 +9,17 @@ echo Please ensure the config settings for agent-id/capability-awareness in \
 echo Enter to continue
 read temp
 
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
+python3 src/main.py with alg_yaml=qmix env_yaml=gymma \
 env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=9976
 
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=6047
+python3 src/main.py with alg_yaml=qmix_gnn env_yaml=gymma agent="dual_channel_gnn" \
+env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=9976
 
-python3 src/main.py with alg_yaml=mappo_gnn env_yaml=gymma \
-env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=4126
+# python3 src/main.py with alg_yaml=qmix_gnn env_yaml=gymma \
+# env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=6047
+
+# python3 src/main.py with alg_yaml=qmix_gnn env_yaml=gymma \
+# env_args.time_limit=1000 env_args.key="robotarium_gym:PredatorCapturePreyGNN-v0" seed=4126
 
 # for exp_num in 1 .. 3
 # do

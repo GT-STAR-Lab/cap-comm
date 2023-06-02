@@ -32,6 +32,10 @@ class GATAgent(nn.Module):
         return torch.zeros(self.args.hidden_dim) #self.encoder.weight.new(1, self.args.hidden_dim).zero_()
 
     def forward(self, x, adj):
+
+        if(len(adj.shape) == 2):
+            adj = adj.unsqueeze(0)
+            
         B, N, N = adj.shape
         # print(x.shape)
         x = self.encoder(x)
