@@ -48,7 +48,11 @@ def load_model(models_dir, config):
     model_file = os.path.join(models_dir, str(ckt), 'agent.th')
     model_weights = torch.load(model_file, map_location=torch.device('cpu'))
     input_dim = model_weights[list(model_weights.keys())[0]].shape[1]
-    
+
+    if(hasattr(config, "capabilities_skip_gnn")):
+        if(config.capabilities_skip_gnn):
+            input_dim += 1
+
     if config.agent=='mlp':
         model = MLPAgent(input_dim, config)
     elif config.agent=='rnn':
@@ -139,9 +143,9 @@ if __name__ == "__main__":
 
 
     ##################
-    env_config_filename = "eval_4_agents_unseen.yaml"
-    sacred_run = 1; 
-    experiment_name = "MLP_4_agents_HSN"
+    env_config_filename = "eval_4_agents_ID_unseen.yaml"
+    sacred_run = 2; 
+    experiment_name = "SC_ID_4_agents_REDO"
     ################
 
     save_filename = env_config_filename.split(".yaml")[0] + "_" + experiment_name + "_sacred_run_" + str(sacred_run) + ".json"
@@ -149,6 +153,7 @@ if __name__ == "__main__":
     experiment_dir = os.path.join(experiment_path, experiment_name)
     env_config_file = os.path.join(env_config_dir, env_config_filename)
     config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir="results")
+    print("Model Dir:", model_dir)
     config.n_actions = 5
     model = load_model(model_dir, config)
 
