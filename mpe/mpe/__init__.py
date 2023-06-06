@@ -1,9 +1,18 @@
 from gym.envs.registration import register
 import mpe.scenarios as scenarios
 import time
+import os
+import yaml
 # Multiagent envs
 # ----------------------------------------
 
+class DictView(object):
+        def __init__(self, d):
+            self.__dict__ = d
+        def __str__(self):
+             
+             return(str(self.__dict__))
+        
 _particles = {
     "multi_speaker_listener": "MultiSpeakerListener-v0",
     "simple_adversary": "SimpleAdversary-v0",
@@ -25,8 +34,16 @@ _particles = {
     "search_and_capture": "SearchAndCapture-v0",
 }
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 for scenario_name, gymkey in _particles.items():
-    scenario = scenarios.load(scenario_name + ".py").Scenario()
+    if(scenario_name == "heterogeneous_material_transport_ca"):
+        with open(os.path.join(current_dir, 'configs', scenario_name, 'config.yaml'), 'r') as f:
+            config = DictView(yaml.load(f, Loader=yaml.SafeLoader))
+
+        scenario = scenarios.load(scenario_name + ".py").Scenario(config=config)
+    else:
+         scenario = scenarios.load(scenario_name + ".py").Scenario()
     world = scenario.make_world()
 
     # Registers multi-agent particle environments:

@@ -42,7 +42,6 @@ git+https://github.com/oxwhirl/smac.git
 
 torch
 torchvision
-torch_geometric
 
 sacred
 pymongo

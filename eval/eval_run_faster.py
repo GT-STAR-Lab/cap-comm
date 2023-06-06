@@ -143,16 +143,17 @@ if __name__ == "__main__":
 
 
     ##################
-    env_config_filename = "eval_4_agents_ID_unseen.yaml"
-    sacred_run = 2; 
+    env_config_filename = "eval_4_agents_ID_seen_bc_default.yaml"
+    sacred_run = 3; 
     experiment_name = "SC_ID_4_agents_REDO"
+    results_rel_dir="results"
     ################
 
     save_filename = env_config_filename.split(".yaml")[0] + "_" + experiment_name + "_sacred_run_" + str(sacred_run) + ".json"
     print("Evaluation Name:", save_filename)
     experiment_dir = os.path.join(experiment_path, experiment_name)
     env_config_file = os.path.join(env_config_dir, env_config_filename)
-    config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir="results")
+    config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir=results_rel_dir)
     print("Model Dir:", model_dir)
     config.n_actions = 5
     model = load_model(model_dir, config)
