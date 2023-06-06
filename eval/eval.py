@@ -80,6 +80,36 @@ def load_model(models_dir, config):
     model.eval()
     return(model)
 
+def count_connected_components(edges, max_nodes):
+    # Build adjacency list from the list of edges
+    graph = {}
+    for u, v in edges:
+        if u not in graph:
+            graph[u] = []
+        if v not in graph:
+            graph[v] = []
+        graph[u].append(v)
+        graph[v].append(u)
+
+    # Set to keep track of visited nodes
+    visited = set()
+
+    # Function to perform DFS
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                dfs(neighbor)
+
+    # Count the number of connected components
+    count = 0
+    for node in range(max_nodes):
+        if node not in visited:
+            count += 1
+            dfs(node)
+
+    return count
+
 def run_eval(env_name, model, config, env_config):
     # env = make_env(env_name)
     if(env_name == "robotarium_gym:HeterogeneousSensorNetwork-v0"):
@@ -93,6 +123,7 @@ def run_eval(env_name, model, config, env_config):
     
     totalReturn = []
     totalConnectivity = []
+    totalConnectedComonents = []
     totalSteps = []
     totalViolations = []
     totalOverlap = []
@@ -105,6 +136,7 @@ def run_eval(env_name, model, config, env_config):
         episodeViolations = 0
         episodeConnectivity = [0 for _ in range(int(max_edges+1))]
         episodeOverlap = []
+        episodeConnectedComponents = [0 for _ in range(n_agents)]
         hs = np.array([np.zeros((config.hidden_dim, )) for i in range(n_agents)])
         
         for j in range(env_config.max_episode_steps+1):      
@@ -120,9 +152,14 @@ def run_eval(env_name, model, config, env_config):
             
             # log data
             episodeViolations += 1.0 if info["violation_occurred"] else 0.0
-            episodeConnectivity[info["connectivity"]] += 1
+            episodeConnectivity[info["edge_count"]] += 1
             episodeOverlap.append(info["total_overlap"])
 
+            # get the number of connected graph formed by the robots
+            num_connected_components = count_connected_components(info["edge_set"], n_agents)
+            episodeConnectedComponents[num_connected_components - 1] += 1
+            # print(num_connected_components)
+            
             if env_config.shared_reward:
                 episodeReturn += reward[0]
             else:
@@ -138,6 +175,7 @@ def run_eval(env_name, model, config, env_config):
         totalReturn.append(episodeReturn)
         totalSteps.append(episodeSteps)
         totalConnectivity.append(list(np.array(episodeConnectivity)/episodeSteps))
+        totalConnectedComonents.append(list(np.array(episodeConnectedComponents)/episodeSteps))
         totalViolations.append(episodeViolations)
         totalOverlap.append(np.mean(episodeOverlap))
     
@@ -146,8 +184,9 @@ def run_eval(env_name, model, config, env_config):
         "returns": totalReturn,
         "steps": totalSteps,
         "violations": totalViolations,
-        "connectivity": totalConnectivity,
-        "overlap": totalOverlap
+        "edge count": totalConnectivity,
+        "overlap": totalOverlap,
+        "connected components" : totalConnectedComonents
     }
     return(eval_data_dict)
 
@@ -180,8 +219,8 @@ if __name__ == "__main__":
     print("Evaluation Name:", save_filename)
     experiment_dir = os.path.join(experiment_path, experiment_name)
     env_config_file = os.path.join(env_config_dir, env_config_filename)
+    
     config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir=results_rel_dir)
-    # print("Model Dir:", model_dir)
     config.n_actions = 5
     model = load_model(model_dir, config)
 
@@ -190,7 +229,7 @@ if __name__ == "__main__":
         env_config = yaml.load(f, Loader=yaml.SafeLoader)
 
     config.n_agents = env_config["n_agents"]
-
+    
     eval_output_dict = run_eval(environment, model, config, env_config)
 
     print("Evaluation output file path:", save_eval_result_dir)
