@@ -3,52 +3,56 @@ import os
 import time
 
 eval_dict = {
-    "eval_3_agents_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
-    "eval_4_agents_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
-    "eval_4_agents_seen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
-    "eval_5_agents_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
-    "eval_4_agents_CA_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
+    # "eval_3_agents_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
+    # "eval_4_agents_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
+    # "eval_4_agents_seen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
+    # "eval_5_agents_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
+    # "eval_4_agents_CA_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
     "eval_4_agents_ID_unseen_bc_default.yaml" : {
-        "SC_ID_4_agents_REDO" : [1, 2, 3],
+        # "SC_ID_4_agents_REDO" : [1, 2, 3],
+        "MLP_ID_4_agents_HSN" : [1, 2, 3]
     },
     "eval_4_agents_ID_seen_bc_default.yaml" : {
-        "SC_ID_4_agents_REDO" : [1, 2, 3],
+        # "SC_ID_4_agents_REDO" : [1, 2, 3],
+        "MLP_ID_4_agents_HSN" : [1, 2, 3]
     },
-    "eval_3_agents_CA_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
-    "eval_5_agents_CA_unseen_bc_default.yaml" : {
-        "SC_4_agents_HSN" : [1, 2, 3],
-        "MLP_4_agents_HSN" : [1, 2, 3],
-        "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
-    },
+    # "eval_3_agents_CA_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
+    # "eval_5_agents_CA_unseen_bc_default.yaml" : {
+    #     "SC_4_agents_HSN" : [1, 2, 3],
+    #     "MLP_4_agents_HSN" : [1, 2, 3],
+    #     "SC_CASKIP_4_agents_HSN" : [1, 2, 3]
+    # },
     "eval_3_agents_ID_unseen_bc_default.yaml" : {
-        "SC_ID_4_agents_REDO" : [1, 2, 3],
+        # "SC_ID_4_agents_REDO" : [1, 2, 3],
+        "MLP_ID_4_agents_HSN" : [1, 2, 3]
     },
     "eval_5_agents_ID_unseen_bc_default.yaml" : {
-        "SC_ID_4_agents_REDO" : [1, 2, 3],
+        # "SC_ID_4_agents_REDO" : [1, 2, 3],
+        "MLP_ID_4_agents_HSN" : [1, 2, 3]
     },
        
 }
