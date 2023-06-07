@@ -32,16 +32,23 @@ _particles = {
     "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
     "terrain_dependant_navigation": "TerrainDependantNavigation-v0",
     "search_and_capture": "SearchAndCapture-v0",
+    "material_transport": "MaterialTransport-v0"
 }
+_environmnets_with_configs = [
+     "material_transport"
+]
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 for scenario_name, gymkey in _particles.items():
-    if(scenario_name == "heterogeneous_material_transport_ca"):
+
+    # load a config for environments that have them.
+    if(scenario_name in _environmnets_with_configs):
+        
         with open(os.path.join(current_dir, 'configs', scenario_name, 'config.yaml'), 'r') as f:
             config = DictView(yaml.load(f, Loader=yaml.SafeLoader))
-
         scenario = scenarios.load(scenario_name + ".py").Scenario(config=config)
+        
     else:
          scenario = scenarios.load(scenario_name + ".py").Scenario()
     world = scenario.make_world()

@@ -1,10 +1,10 @@
 #Arguments needed by main.py
-scenario: HeterogeneousMaterialTransportCA #name of the folder inside scenarios
+scenario: MaterialTransport #name of the folder inside scenarios
 
 n_actions: 5 #The number of actions available for the agent
 n_agents: 4
-episodes: 10 #Number of episodes to run for
 shared_reward: True
+max_steps: 100 # maximum number of steps per episode
 
 test: False #Set this to change the agents that are being selected from
 #If the following two are False, make sure resample is also False
