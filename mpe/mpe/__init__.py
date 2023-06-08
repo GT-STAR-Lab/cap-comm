@@ -28,8 +28,8 @@ _particles = {
     "heterogeneous_sensor_network": "HeterogeneousSensorNetwork-v0",
     "heterogeneous_material_transport": "HeterogeneousMaterialTransport-v0",
     "terrain_aware_navigation_ca": "TerrainAwareNavigationCA-v0",
-    "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
-    "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
+    # "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
+    # "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
     "terrain_dependant_navigation": "TerrainDependantNavigation-v0",
     "search_and_capture": "SearchAndCapture-v0",
     "material_transport": "MaterialTransport-v0"
@@ -42,27 +42,33 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 for scenario_name, gymkey in _particles.items():
 
+    
     # load a config for environments that have them.
     if(scenario_name in _environmnets_with_configs):
         
-        with open(os.path.join(current_dir, 'configs', scenario_name, 'config.yaml'), 'r') as f:
+        with open(os.path.join(current_dir, 'scenarios', 'configs', scenario_name, 'config.yaml'), 'r') as f:
             config = DictView(yaml.load(f, Loader=yaml.SafeLoader))
         scenario = scenarios.load(scenario_name + ".py").Scenario(config=config)
-        
+
     else:
          scenario = scenarios.load(scenario_name + ".py").Scenario()
     world = scenario.make_world()
 
+    kwargs={
+            "world": world,
+            "reset_callback": scenario.reset_world,
+            "reward_callback": scenario.reward,
+            "observation_callback": scenario.observation
+    }
+
+    if(scenario_name == "material_transport"):
+         kwargs["done_callback"] = scenario.done
+         kwargs["info_callback"] = scenario.info
     # Registers multi-agent particle environments:
     register(
         gymkey,
         entry_point="mpe.environment:MultiAgentEnv",
-        kwargs={
-            "world": world,
-            "reset_callback": scenario.reset_world,
-            "reward_callback": scenario.reward,
-            "observation_callback": scenario.observation,
-        },
+        kwargs=kwargs
     )
 
 # Registers the custom double spread environment:

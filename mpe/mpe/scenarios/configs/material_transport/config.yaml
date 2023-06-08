@@ -4,12 +4,15 @@ scenario: MaterialTransport #name of the folder inside scenarios
 n_actions: 5 #The number of actions available for the agent
 n_agents: 4
 shared_reward: True
-max_steps: 100 # maximum number of steps per episode
 
-test: False #Set this to change the agents that are being selected from
-#If the following two are False, make sure resample is also False
 capability_aware: True #Either the agent know what class they're in or their capabilities. Make sure this matches training
 agent_id: False #If capability_aware is False, this determines if the class id is appended instead or not
+
+# reward details
+local_ratio: 0.75
+time_penalty: -0.005
+delta_dist_to_quota_multiplier: 1.0
+
 
 #Information needed to generate the predefined agents and coalitions
 n_train_agents: 20
@@ -17,15 +20,16 @@ n_test_agents: 20
 n_coalitions: 5
 coalition_file: "custom_5_coalitions_4_robots.yaml"
 
+
 traits:
   lumber:
-    distribution: 'uniform'
-    low: 0.0
-    high: 5.0
+    distribution: 'randint'
+    low: 0
+    high: 11
   water:
-    distribution: 'uniform'
-    low: 0.0
-    high: 5.0
+    distribution: 'randint'
+    low: 0
+    high: 11
 ### For experiment 2, turn load_from_predefined_coalitions to false
 load_from_predefined_coalitions: True # Load coalitions from 'predefined_coalition.yaml'. If False, then loads new agents based on traits distribution.
 load_from_predefined_agents: False # Uses the predefined agents from the predefined_coalition file, but samples new coalitions from these agents.

@@ -159,6 +159,18 @@ class World(object):
                     p_force[b] = f_b + p_force[b]        
         return p_force
 
+    def restrict_in_boundary(self, p_pos):
+        new_p_pos = np.copy(p_pos)
+        if(p_pos[0] > 1.0):
+            new_p_pos[0] = 1.0
+        elif(p_pos[0] < -1.0):
+            new_p_pos[0] = -1.0
+        elif(p_pos[1] > 1.0):
+            new_p_pos[1] = 1.0
+        elif(p_pos[1] < -1.0):
+            new_p_pos[1] = -1.0
+        return(new_p_pos)
+
     # integrate physical state
     def integrate_state(self, p_force):
         for i,entity in enumerate(self.entities):
@@ -172,6 +184,7 @@ class World(object):
                     entity.state.p_vel = entity.state.p_vel / np.sqrt(np.square(entity.state.p_vel[0]) +
                                                                   np.square(entity.state.p_vel[1])) * entity.max_speed
             entity.state.p_pos += entity.state.p_vel * self.dt
+            entity.state.p_pos = self.restrict_in_boundary(entity.state.p_pos)
 
     def update_agent_state(self, agent):
         # set communication state (directly for now)
