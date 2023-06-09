@@ -178,10 +178,12 @@ def main(_run, _config, _log, seed):
 if __name__ == '__main__':
     
     print(sys.argv)
-    
+    no_save_sacred = False
     for arg in sys.argv:
         if("env_args.key" in arg):
             map_name = arg.split(":")[-1]
+        if("no-save-sacred" in arg):
+            no_save_sacred = True
     results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
     unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
     ex.add_config(unique_token=unique_token)
@@ -189,8 +191,8 @@ if __name__ == '__main__':
     # sys.argv.append(f"-i {unique_token}") # set the id of the experiment to be the time it was ran. This matches with tensorboard
     
     # logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
-    
-    ex.observers.append(FileStorageObserver(os.path.join(results_path, "sacred_runs", map_name))) # save experiments based on the environment
+    if(not no_save_sacred):
+        ex.observers.append(FileStorageObserver(os.path.join(results_path, "sacred_runs", map_name))) # save experiments based on the environment
     
     # main()
     ex.run_commandline()

@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--environment', type=str, help='Environment argument', default="robotarium_gym:HeterogeneousSensorNetwork-v0")
     parser.add_argument('--experiment_path', type=str, help='Experiment path argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl")
     parser.add_argument('--env_config_dir', type=str, help='Env config directory argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_env_configs")
-    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_saves")
+    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_saves_v2")
     parser.add_argument('--env_config_filename', type=str, help='Env config filename argument')
     parser.add_argument('--sacred_run', type=str, help='Sacred run argument')
     parser.add_argument('--experiment_name', type=str, help='Experiment name argument')
@@ -124,6 +124,7 @@ def run_eval(env_name, model, config, env_config):
     totalReturn = []
     totalConnectivity = []
     totalConnectedComonents = []
+    percentageOfSingleConnectedComponentsTillStep = []
     totalSteps = []
     totalViolations = []
     totalOverlap = []
@@ -137,6 +138,7 @@ def run_eval(env_name, model, config, env_config):
         episodeConnectivity = [0 for _ in range(int(max_edges+1))]
         episodeOverlap = []
         episodeConnectedComponents = [0 for _ in range(n_agents)]
+        episodeSingleConnectedComponentsAtEpisode = []
         hs = np.array([np.zeros((config.hidden_dim, )) for i in range(n_agents)])
         
         for j in range(env_config.max_episode_steps+1):      
@@ -158,6 +160,7 @@ def run_eval(env_name, model, config, env_config):
             # get the number of connected graph formed by the robots
             num_connected_components = count_connected_components(info["edge_set"], n_agents)
             episodeConnectedComponents[num_connected_components - 1] += 1
+            episodeSingleConnectedComponentsAtEpisode.append(1 if num_connected_components==1 else 0)
             # print(num_connected_components)
             
             if env_config.shared_reward:
@@ -176,9 +179,11 @@ def run_eval(env_name, model, config, env_config):
         totalSteps.append(episodeSteps)
         totalConnectivity.append(list(np.array(episodeConnectivity)/episodeSteps))
         totalConnectedComonents.append(list(np.array(episodeConnectedComponents)/episodeSteps))
+
+        # gets the percentage of steps from 0 to n for which there was a single connected component formed.
+        percentageOfSingleConnectedComponentsTillStep.append(list(np.cumsum(episodeSingleConnectedComponentsAtEpisode) / np.arange(1, episodeSteps+1)))
         totalViolations.append(episodeViolations)
-        totalOverlap.append(np.mean(episodeOverlap))
-    
+        totalOverlap.append(np.mean(episodeOverlap))    
 
     eval_data_dict = {
         "returns": totalReturn,
@@ -186,7 +191,8 @@ def run_eval(env_name, model, config, env_config):
         "violations": totalViolations,
         "edge count": totalConnectivity,
         "overlap": totalOverlap,
-        "connected components" : totalConnectedComonents
+        "connected components" : totalConnectedComonents,
+        "percentage of single connected components": percentageOfSingleConnectedComponentsTillStep
     }
     return(eval_data_dict)
 
@@ -228,6 +234,8 @@ if __name__ == "__main__":
     with open(env_config_file, 'r') as f:
         env_config = yaml.load(f, Loader=yaml.SafeLoader)
 
+    # only use the following for debugging
+    # env_config["episodes"] = 1
     config.n_agents = env_config["n_agents"]
     
     eval_output_dict = run_eval(environment, model, config, env_config)

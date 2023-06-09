@@ -47,9 +47,8 @@ class Scenario(BaseScenario):
     def __init__(self, config=None):
         """Initialize the environment"""
 
-        self.load_from_debug_agents = True
+        self.load_from_debug_agents = False
         self.config = config
-        print(self.config)
         self.n_agents = self.config.n_agents
         self.local_ratio = self.config.local_ratio
         self.time_penalty = self.config.time_penalty
@@ -120,7 +119,7 @@ class Scenario(BaseScenario):
         for idx in range(self.n_agents):
             lumber_cap = int(getattr(np.random, self.config.traits["lumber"]["distribution"])(**func_args))
             concrete_cap = self.max_cap - lumber_cap
-            default_id = ['0'] * (self.n_agents * self.config.n_coaltions)
+            default_id = ['0'] * (self.n_agents * self.config.n_coalitions)
             agent = self._build_agent(world, str(idx), idx, default_id, 
                                        lumber_cap=lumber_cap, concrete_cap=concrete_cap)
             agents.append(agent)
@@ -130,9 +129,9 @@ class Scenario(BaseScenario):
         "Load a set of agents (as a coalition) from predefined coalitions"
         t = "train"
         agents = []
-        coalition_idx = np.random.randint(self.args.n_coalitions)
+        coalition_idx = np.random.randint(self.config.n_coalitions)
         s = str(self.n_agents) + "_agents"
-        coalition = self.predefined_coalition[t]["coalitions"][s][coalition_idx]
+        coalition = self.predefined_coalitions[t]["coalitions"][s][coalition_idx]
         idx = 0
         for _, agent in coalition.items():
             lumber_cap, concrete_cap = agent["lumber_cap"], agent["concrete_cap"]
@@ -150,8 +149,8 @@ class Scenario(BaseScenario):
         agents = []
 
         s = "4_agents"
-        for coalition_idx in range(self.args.n_coalitions):
-            coalition = self.predefined_coalition[t]["coalitions"][s][coalition_idx]
+        for coalition_idx in range(self.config.n_coalitions):
+            coalition = self.predefined_coalitions[t]["coalitions"][s][coalition_idx]
 
             idx = 0
             for _, agent in coalition.items():
@@ -161,7 +160,7 @@ class Scenario(BaseScenario):
                                         lumber_cap=lumber_cap, concrete_cap=concrete_cap)
                 idx += 1
                 agent_pool.append(a)
-        idx = 0
+        index = 0
         for i in range(self.n_agents):
             agent = random.choice(agent_pool)
             agent.index = index
@@ -185,7 +184,7 @@ class Scenario(BaseScenario):
             agents = self.load_agents_from_trait_distribution(world)
 
         # now with the agents loaded, lets build a random possible quota
-        lumber_quota, concrete_quota = 0, 0
+        lumber_quota, concrete_quota = 1, 1
         for agent in agents:
             which_resource = np.random.randint(0, 2)
             if(which_resource == 0):
@@ -197,6 +196,7 @@ class Scenario(BaseScenario):
 
         
         return(agents)
+
     def make_world(self):
 
         world = World()
