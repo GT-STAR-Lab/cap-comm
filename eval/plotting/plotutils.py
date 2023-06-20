@@ -5,7 +5,7 @@ import numpy as np
 
 def preamble():
     
-    sns.set(style="white", font_scale=2.0)
+    sns.set(style="white", font_scale=2.5)
 
     colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
     palette = sns.color_palette(colors, n_colors=5)
@@ -14,6 +14,8 @@ def preamble():
     
     fig, ax = plt.subplots()
     fig.set_size_inches(11.7, 8.27)
+    sns.set(rc={"font.size": 16.0})
+    x_labels = ax.get_xlabel()
     return fig, ax
 
 def set_color_by_order(order):
@@ -43,7 +45,7 @@ def outtro(kwargs):
 
     if("save_path" in kwargs.keys()):
         value = kwargs["save_path"]
-        plt.savefig(os.path.join(value, kwargs["fig_name"]))
+        plt.savefig(os.path.join(value, kwargs["fig_name"]), dpi=300, bbox_inches="tight")
         
 
 def template(data, x="models", y=None, **kwargs):
