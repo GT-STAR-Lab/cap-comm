@@ -79,8 +79,8 @@ class EpisodeRunner:
                 "terminated": [(terminated != env_info.get("episode_limit", False),)],
                 # "adj_matrix": [self.env.get_adj_matrix()],
             }
-            if(test_mode):
-                self.env.render()
+            # if(test_mode):
+            #     self.env.render()
             self.batch.update(post_transition_data, ts=self.t)
 
             self.t += 1

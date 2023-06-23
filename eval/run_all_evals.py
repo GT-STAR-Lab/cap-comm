@@ -59,7 +59,7 @@ eval_dict = {
 
 if __name__ == "__main__":
     
-    python_eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval.py")
+    python_eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval_robotarium_hsn.py")
 
     subprocesses = [] # list to hold the subprocesses
     max_subprocesses = 16
