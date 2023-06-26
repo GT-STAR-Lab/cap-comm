@@ -53,10 +53,13 @@ class Scenario(BaseScenario):
         self.load_from_debug_agents = config.load_from_debug_agent_func # Set true if you are trying to debug the environment. Simplist agent to resource quota.
         self.config = config
         self.n_agents = self.config.n_agents
+        
         self.lumber_pickup_reward, self.concrete_pickup_reward = self.config.lumber_pickup_reward, self.config.concrete_pickup_reward
         self.dropoff_reward = self.config.dropoff_reward
         self.quota_met_reward = self.config.quota_met_reward
         self.time_penalty = self.config.time_penalty
+        self.surplus_penalty_scalar = self.config.surplus_penalty_scalar
+
         self.episode_number = 0
         self.team = []
         self.max_cap = self.config.traits["lumber"]["high"] - 1
@@ -177,19 +180,19 @@ class Scenario(BaseScenario):
         # load the agents according to the loading scheme
         if(self.load_from_debug_agents):
             agents = self.load_debug_agents(world)
-            self._initialize_quota(agents, "debug")
+            # self._initialize_quota(agents, "debug")
 
         elif self.config.load_from_predefined_coalitions:
             agents = self.load_agents_from_predefined_coalitions(world)
-            self._initialize_quota(agents, "random")
+            # self._initialize_quota(agents, "random")
         
         elif(self.config.load_from_predefined_agents):
             agents = self.load_agents_from_predefined_agents(world)
-            self._initialize_quota(agents, "random")
+            # self._initialize_quota(agents, "random")
         
         else:
             agents = self.load_agents_from_trait_distribution(world)
-            self._initialize_quota(agents, "random")
+            # self._initialize_quota(agents, "random")
         return(agents)
     
     def _initialize_quota(self, agents, type="random"):
@@ -197,8 +200,9 @@ class Scenario(BaseScenario):
         This function should be called after agents are initialized, and is used to determine
         a quota that is possible.
         """
-        if(type=="random"):
-            lumber_quota, concrete_quota = 1, 1
+        # at least one exact solution that requires only a single trip
+        if(type=="single_exact"):
+            lumber_quota, concrete_quota = 0, 0
             for agent in agents:
                 which_resource = np.random.randint(0, 2)
                 if(which_resource == 0):
@@ -206,31 +210,38 @@ class Scenario(BaseScenario):
                 else:
                     concrete_quota += agent.concrete_cap
 
-            self.lumber_quota = lumber_quota; self.concrete_quota = concrete_quota 
+            self.lumber_quota = max(1, lumber_quota); self.concrete_quota = max(1, concrete_quota) 
         
         elif(type=="debug"):
             self.lumber_quota=2
             self.concrete_quota=1
-        
+
+        elif(type=="random"):
+            self.lumber_quota = self.n_agents*np.random.randint(1, 5)
+            self.concrete_quota = self.n_agents*5 - self.lumber_quota
+        elif(type=="fixed"):
+            self.lumber_quota = 2 * self.n_agents
+            self.concrete_quota = 2 * self.n_agents
+
     def make_world(self):
 
         world = World()
         lumber_landmark = Landmark()
-        lumber_landmark.name = "lumber depot"
+        lumber_landmark.name = "agent_lumber depot"
         lumber_landmark.collide = False; lumber_landmark.movable = False
         lumber_landmark.size = DEPOT_SIZE
         lumber_landmark.color = np.array([255, 0, 0]) / 255 # yellowish brown
         lumber_landmark.state.p_pos = np.array([0.5, 0.5]); lumber_landmark.state.p_vel = np.array([0., 0.])
 
         concrete_landmark = Landmark()
-        concrete_landmark.name = "concrete depot"
+        concrete_landmark.name = "agent_concrete depot"
         concrete_landmark.collide = False; concrete_landmark.movable = False
         concrete_landmark.size = DEPOT_SIZE
         concrete_landmark.color = np.array([0, 0, 255]) / 255 # gray
         concrete_landmark.state.p_pos = np.array([-0.5, 0.5]); concrete_landmark.state.p_vel = np.array([0., 0.])
 
         construction_site_landmark = Landmark()
-        construction_site_landmark.name = "construction site"
+        construction_site_landmark.name = "agent_construction site"
         construction_site_landmark.collide = False; construction_site_landmark.movable = False
         construction_site_landmark.size = CONSTRUCTION_SITE_SIZE
         construction_site_landmark.color = np.array([153, 204, 0]) / 255
@@ -250,15 +261,20 @@ class Scenario(BaseScenario):
         if self.config.resample and (self.episode_number % self.config.resample_frequency == 0):
             self.team = self.load_agents(world)
         
-        
+        self._initialize_quota(self.team, type="fixed")
         self.team = self.reinitialize_positions(self.team)
         
         world.agents = self.team
 
         world.steps = 0
+        # keep track of amount of lumber and concrete
         self.lumber_delivered = 0
         self.concrete_delivered = 0
-        self.quota_filled = False
+
+        # quota met booleans
+        self.total_quota_filled = False
+        self.lumber_quota_filled = False
+        self.concrete_quota_filled = False
 
     def reward(self, agent, world):
         """
@@ -269,30 +285,30 @@ class Scenario(BaseScenario):
         pos = agent.state.p_pos
         agent_index = agent.index
 
-        # compute distance to lumber and concrete site
+        # compute distance to lumber, concrete site, and construction site
         dist_to_lumber_landmark = np.linalg.norm(pos - world.landmarks[0].state.p_pos)
         dist_to_concrete_landmark = np.linalg.norm(pos - world.landmarks[1].state.p_pos)
         dist_to_construction_site_landmark = np.linalg.norm(pos - world.landmarks[2].state.p_pos)
         local_reward = 0
 
-        # Agents load up on lumber and concrete at depot. Rewarded only if quota hasn't been filled. 
+        # Agents load up on lumber and concrete at depot. Rewarded only if quotas haven't been filled. 
         if(self.team[agent_index].empty()):
             
             if(dist_to_lumber_landmark < DIST_THRESHOLD): # pick up lumber
                 self.team[agent_index].load("lumber")
-                local_reward += self.lumber_pickup_reward if (self.team[agent_index].lumber_cap > 0.0 and not self.quota_filled) else 0.0
-                
+                local_reward += self.lumber_pickup_reward if (self.team[agent_index].lumber_cap > 0.0 and not self.lumber_quota_filled) else 0.0
+
             elif(dist_to_concrete_landmark < DIST_THRESHOLD): # pick up concrete
                 self.team[agent_index].load("concrete")
-                local_reward += self.concrete_pickup_reward if (self.team[agent_index].concrete_cap > 0.0 and not self.quota_filled) else 0.0
+                local_reward += self.concrete_pickup_reward if (self.team[agent_index].concrete_cap > 0.0 and not self.concrete_quota_filled) else 0.0
 
         else:
             # reward agents positively only if they contribute to quota before it is filled
             if(dist_to_construction_site_landmark < DIST_THRESHOLD):
                 
                 lumber, concrete = self.team[agent_index].unload()
-                l_required = self.lumber_quota - self.lumber_delivered
-                c_required = self.concrete_quota - self.concrete_delivered
+                # l_required = self.lumber_quota - self.lumber_delivered
+                # c_required = self.concrete_quota - self.concrete_delivered
 
                 # if(l_required < 0 and lumber > 0):
                 #     # local_reward += -lumber
@@ -303,8 +319,34 @@ class Scenario(BaseScenario):
                 # elif(concrete > 0 or lumber > 0):
                 #     local_reward += self.dropoff_reward
 
-                if((concrete > 0 or lumber > 0) and not self.quota_filled):
-                    local_reward += self.dropoff_reward
+                # if((concrete > 0 or lumber > 0) and not self.total_quota_filled):
+                #     local_reward += self.dropoff_reward
+                lumber_required = self.lumber_quota - self.lumber_delivered
+                concrete_required = self.concrete_quota - self.concrete_delivered
+                pos_lumber_addition = min(0, lumber - lumber_required)
+                pos_concrete_addition = min(0, concrete - concrete_required)
+
+                self.lumber_delivered += lumber
+                self.concrete_delivered += concrete
+                lumber_surplus = self.lumber_delivered - self.lumber_quota
+                concrete_surplus = self.concrete_delivered - self.concrete_quota
+                
+                if(lumber > 0):
+                    if(lumber_surplus > 0.01):
+                        local_reward += (-lumber + pos_lumber_addition) * self.surplus_penalty_scalar
+                        self.lumber_quota_filled = True
+                    if(pos_lumber_addition > 0):
+                        local_reward += self.dropoff_reward
+                if(concrete > 0):
+                    if(concrete_surplus > 0.01):
+                        local_reward += (-concrete + pos_concrete_addition) * self.surplus_penalty_scalar
+                        self.concrete_quota_filled = True
+                    if(pos_concrete_addition > 0):
+                        local_reward += self.dropoff_reward
+                
+                if(self.concrete_quota_filled and self.lumber_quota_filled):
+                    self.total_quota_filled = True
+
                 
                 # l_rew = ((lumber + self.lumber_delivered) / self.lumber_quota)
                 # c_rew = ((concrete + self.concrete_delivered) / self.concrete_quota)
@@ -316,27 +358,23 @@ class Scenario(BaseScenario):
 
                 # local_reward += l_rew + c_rew
 
-                self.lumber_delivered += lumber
-                self.concrete_delivered += concrete
-
                 # once the quota is filled, penalize for surplus
-                if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
-                    lumber_surplus = self.lumber_delivered - self.lumber_quota
-                    concrete_surplus = self.concrete_delivered - self.concrete_quota
-                    local_reward += - lumber_surplus - concrete_surplus
-                    self.quota_filled = True
+                # if((lumber_surplus > 0.01) and  (concrete_surplus > 0.01)):
+                #     local_reward += - lumber_surplus - concrete_surplus
+                #     self.quota_filled = True
+                    
         # big reward if you meet the total quota
-        # if(self.quota_filled == False):
+        # if(self.total_quota_filled == False):
         #     if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
         #         lumber_surplus = self.lumber_delivered - self.lumber_quota
         #         concrete_surplus = self.concrete_delivered - self.concrete_quota
         #         local_reward += self.quota_met_reward - lumber_surplus - concrete_surplus
-        #         self.quota_filled = True
+        #         self.total_quota_filled = True
         # else:
         #     local_reward = 0
 
         # time penalty only if quota is not filled
-        if(not self.quota_filled):
+        if(not self.total_quota_filled):
             rew = local_reward + self.time_penalty
         else:
             rew = local_reward
@@ -354,8 +392,10 @@ class Scenario(BaseScenario):
         dists_to_resource_quota = [lumber_remaining_percentage, 
                                     concrete_remaining_percentage]
         agents_current_load = [agent.lumber_loaded, agent.concrete_loaded]
-        lumber_depot = list(agent_pos - LUMBER_DEPOT); concrete_depot = list(agent_pos - CONCRETE_DEPOT); construction_site = list(agent_pos - CONSTRUCTION_SITE)
-        base_observation = [*agent_pos, *agent_vel, *lumber_depot, *concrete_depot, *construction_site,
+
+        # distance to lumber and concrete depot
+        dist_lumber_depot = list(agent_pos - LUMBER_DEPOT); dist_concrete_depot = list(agent_pos - CONCRETE_DEPOT); dist_construction_site = list(agent_pos - CONSTRUCTION_SITE)
+        base_observation = [*agent_pos, *agent_vel, *dist_lumber_depot, *dist_concrete_depot, *dist_construction_site,
                             *dists_to_resource_quota, *agents_current_load]
         
         if(self.config.capability_aware): # append capability    
@@ -372,11 +412,11 @@ class Scenario(BaseScenario):
         
         return False
         if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
-            self.quota_filled = True
+            self.total_quota_filled = True
             return True
         else:
 
-            self.quota_filled = False
+            self.total_quota_filled = False
             return False
         
     def info(self, agent, world):
@@ -385,9 +425,10 @@ class Scenario(BaseScenario):
         lumber_surplus = self.lumber_delivered - self.lumber_quota
         concrete_surplus = self.concrete_delivered - self.concrete_quota
 
-        info = {'quota_filled': self.quota_filled, 'lumber_remaining (%)': lumber_remaining_percentage,
+        info = {'total_quota_filled': self.total_quota_filled, 'lumber_remaining (%)': lumber_remaining_percentage,
                     'concrete_remaining (%)': concrete_remaining_percentage,
-                    'lumber_surplus': lumber_surplus, 'concrete_surplus': concrete_surplus}
+                    'lumber_surplus': lumber_surplus, 'concrete_surplus': concrete_surplus,
+                    'lumber_quota_filled': self.lumber_quota_filled, 'concrete_quota_filled': self.concrete_quota_filled}
         return info
 
     

@@ -50,13 +50,20 @@ def greedy_cap_controller_step(obs, env):
     """Each agent greedily takes what it is best at carrying."""
     agents = env.agents
     actions = []
-    for agent in agents:
+
+    for i, agent in enumerate(agents):
+
+        lumber_quota_filled = False if obs[i][10] > 0 else True
+        concrete_quota_filled = False if obs[i][11] > 0 else True
+        
         # if agent is empty, it greedily goes to the depot it can carry the most from
         if(agent.empty()):
-            if(agent.lumber_cap > agent.concrete_cap):
+            if(agent.lumber_cap > agent.concrete_cap and not lumber_quota_filled):
                 action = _get_step_toward_goal_pos(agent.state.p_pos, LUMBER_DEPOT)
-            else:
+            elif(agent.lumber_cap <= agent.concrete_cap and not concrete_quota_filled):
                 action = _get_step_toward_goal_pos(agent.state.p_pos, CONCRETE_DEPOT)
+            else:
+                action = _get_step_toward_goal_pos(agent.state.p_pos, CONSTRUCTION_SITE)
         # if the agent is loaded, it goes to the construction site
         else:
             action = _get_step_toward_goal_pos(agent.state.p_pos, CONSTRUCTION_SITE)
@@ -81,10 +88,9 @@ def main(args):
     # env = env_REGISTRY["gymma"](key="mpe:MaterialTransport-v0", time_limit=80, pretrained_wrapper=False)
     env = _make_env()
     obs = env.reset()
-
     
-    episodes = 20
-    steps = 5
+    episodes = 1
+    steps = 100
     for episode in range(episodes):
         eps_return = 0
         for step in range(steps):
