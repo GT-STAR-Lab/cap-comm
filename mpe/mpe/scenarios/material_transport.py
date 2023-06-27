@@ -56,7 +56,7 @@ class Scenario(BaseScenario):
         
         self.lumber_pickup_reward, self.concrete_pickup_reward = self.config.lumber_pickup_reward, self.config.concrete_pickup_reward
         self.dropoff_reward = self.config.dropoff_reward
-        self.quota_met_reward = self.config.quota_met_reward
+        self.quota_filled_reward_scalar = self.config.quota_filled_reward_scalar
         self.time_penalty = self.config.time_penalty
         self.surplus_penalty_scalar = self.config.surplus_penalty_scalar
 
@@ -217,8 +217,11 @@ class Scenario(BaseScenario):
             self.concrete_quota=1
 
         elif(type=="random"):
-            self.lumber_quota = self.n_agents*np.random.randint(1, 5)
-            self.concrete_quota = self.n_agents*5 - self.lumber_quota
+            # self.lumber_quota = self.n_agents*np.random.randint(1, 5)
+            # self.concrete_quota = self.n_agents*5 - self.lumber_quota
+            self.lumber_quota = np.random.randint(2*self.n_agents, 5*self.n_agents)
+            self.concrete_quota = np.random.randint(2*self.n_agents, 5*self.n_agents)
+        
         elif(type=="fixed"):
             self.lumber_quota = 2 * self.n_agents
             self.concrete_quota = 2 * self.n_agents
@@ -261,7 +264,7 @@ class Scenario(BaseScenario):
         if self.config.resample and (self.episode_number % self.config.resample_frequency == 0):
             self.team = self.load_agents(world)
         
-        self._initialize_quota(self.team, type="fixed")
+        self._initialize_quota(self.team, type="random")
         self.team = self.reinitialize_positions(self.team)
         
         world.agents = self.team
@@ -331,6 +334,7 @@ class Scenario(BaseScenario):
                 lumber_surplus = self.lumber_delivered - self.lumber_quota
                 concrete_surplus = self.concrete_delivered - self.concrete_quota
                 
+                # only reward/penalize if the agent drops off lumber or concrete
                 if(lumber > 0):
                     if(lumber_surplus > 0.01):
                         local_reward += (-lumber + pos_lumber_addition) * self.surplus_penalty_scalar
@@ -344,10 +348,11 @@ class Scenario(BaseScenario):
                     if(pos_concrete_addition > 0):
                         local_reward += self.dropoff_reward
                 
+                # finished meeting quota
                 if(self.concrete_quota_filled and self.lumber_quota_filled):
                     self.total_quota_filled = True
+                    local_reward += self.quota_filled_reward_scalar * (self.concrete_quota + self.lumber_quota)
 
-                
                 # l_rew = ((lumber + self.lumber_delivered) / self.lumber_quota)
                 # c_rew = ((concrete + self.concrete_delivered) / self.concrete_quota)
                 # if(l_rew > 1.0):
@@ -368,7 +373,7 @@ class Scenario(BaseScenario):
         #     if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
         #         lumber_surplus = self.lumber_delivered - self.lumber_quota
         #         concrete_surplus = self.concrete_delivered - self.concrete_quota
-        #         local_reward += self.quota_met_reward - lumber_surplus - concrete_surplus
+        #         local_reward += self.quota_filled_reward_scalar - lumber_surplus - concrete_surplus
         #         self.total_quota_filled = True
         # else:
         #     local_reward = 0
@@ -410,13 +415,9 @@ class Scenario(BaseScenario):
 
     def done(self, agent, world):
         
-        return False
-        if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
-            self.total_quota_filled = True
+        if(self.total_quota_filled):
             return True
         else:
-
-            self.total_quota_filled = False
             return False
         
     def info(self, agent, world):
