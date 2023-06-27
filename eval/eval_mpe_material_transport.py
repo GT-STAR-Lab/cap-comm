@@ -19,6 +19,7 @@ import logging
 from tqdm import tqdm
 import pandas as pd
 import argparse
+import imageio
 
 
 class DictView(object):
@@ -43,7 +44,8 @@ def parse_args():
     parser.add_argument('--render', default=False, action='store_true')
     parser.add_argument('--num_episodes', default=1, type=int, help="Number of episodes for evaluation")
     parser.add_argument('--max_num_steps', default=100, type=int, help="Maximum number of steps for an episode")
-
+    parser.add_argument('--render_freq', default=10, type=int, help="Frequency of episodes to display/save render")
+    parser.add_argument('--save_renders', default=False, action='store_true')
 
     args = parser.parse_args()
     return args
@@ -118,7 +120,7 @@ def run_eval(env_name, model, config, env_config):
         episodeReturn = 0
         episodeSteps = 0
         hs = np.array([np.zeros((config.hidden_dim, )) for i in range(n_agents)])
-        
+        frames = []
         for j in range(max_num_steps):      
             
             if config.agent == "gnn":
@@ -134,8 +136,11 @@ def run_eval(env_name, model, config, env_config):
                 episodeReturn += reward[0]
             else:
                 episodeReturn += sum(reward)
-            if(render):
-                env.render()
+            if(render and (i % args.render_freq == 0)):
+                frame = env.render(mode="rgb_array")
+                if(args.save_renders):
+                    frames.append(frame)
+
             if done[0]:
                 episodeSteps = j+1
                 break
@@ -143,9 +148,13 @@ def run_eval(env_name, model, config, env_config):
         if episodeSteps == 0:
             episodeSteps = max_num_steps
         
+        if(args.save_renders and (i % args.render_freq == 0)):
+            imageio.mimsave(os.path.join(save_renders_dir, "%d.mp4"%i), frames, fps=15)
+
         obs = np.array(env.reset())
         totalReturn.append(episodeReturn)
         totalSteps.append(episodeSteps)
+        print("Episode Return:", episodeReturn)
   
 
     eval_data_dict = {
@@ -186,7 +195,10 @@ if __name__ == "__main__":
     print("Evaluation Name:", save_filename)
     experiment_dir = os.path.join(experiment_path, experiment_name)
     env_config_file = os.path.join(env_config_dir, env_config_filename)
-    
+    save_renders_dir = os.path.join(save_eval_result_dir, save_filename.split(".json")[0]+"_renderings")
+    if(not os.path.exists(save_renders_dir)):
+        os.mkdir(save_renders_dir)
+
     config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir=results_rel_dir)
     config.n_actions = 5
     model = load_model(model_dir, config)

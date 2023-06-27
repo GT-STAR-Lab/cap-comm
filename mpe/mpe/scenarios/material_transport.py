@@ -189,7 +189,6 @@ class Scenario(BaseScenario):
         elif(self.config.load_from_predefined_agents):
             agents = self.load_agents_from_predefined_agents(world)
             # self._initialize_quota(agents, "random")
-        
         else:
             agents = self.load_agents_from_trait_distribution(world)
             # self._initialize_quota(agents, "random")
@@ -263,6 +262,7 @@ class Scenario(BaseScenario):
 
         if self.config.resample and (self.episode_number % self.config.resample_frequency == 0):
             self.team = self.load_agents(world)
+        
         
         self._initialize_quota(self.team, type="random")
         self.team = self.reinitialize_positions(self.team)

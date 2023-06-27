@@ -35,6 +35,7 @@ traits:
 
 ### For experiment 2, turn load_from_predefined_coalitions to false
 load_from_debug_agent_func: False
+load_specific_coalition: True
 load_from_predefined_coalitions: True # Load coalitions from 'predefined_coalition.yaml'. If False, then loads new agents based on traits distribution.
 load_from_predefined_agents: False # Uses the predefined agents from the predefined_coalition file, but samples new coalitions from these agents.
 resample: False #Set to true to resample agents/coalitions
