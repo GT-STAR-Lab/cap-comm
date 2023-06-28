@@ -60,6 +60,12 @@ class Scenario(BaseScenario):
         self.time_penalty = self.config.time_penalty
         self.surplus_penalty_scalar = self.config.surplus_penalty_scalar
 
+        # lower and upper quotas (absolute) considered for a single agent
+        # these values will be multiplied by n_agents to scale to the number of agents
+        # better
+        self.lower_quota_limit =0.5 * self.n_agents
+        self.upper_quota_limit = 2.0 * self.n_agents
+
         self.episode_number = 0
         self.team = []
         self.max_cap = self.config.traits["lumber"]["high"] - 1
@@ -180,18 +186,16 @@ class Scenario(BaseScenario):
         # load the agents according to the loading scheme
         if(self.load_from_debug_agents):
             agents = self.load_debug_agents(world)
-            # self._initialize_quota(agents, "debug")
 
         elif self.config.load_from_predefined_coalitions:
             agents = self.load_agents_from_predefined_coalitions(world)
-            # self._initialize_quota(agents, "random")
         
         elif(self.config.load_from_predefined_agents):
             agents = self.load_agents_from_predefined_agents(world)
-            # self._initialize_quota(agents, "random")
+            
         else:
             agents = self.load_agents_from_trait_distribution(world)
-            # self._initialize_quota(agents, "random")
+            
         return(agents)
     
     def _initialize_quota(self, agents, type="random"):
@@ -216,14 +220,11 @@ class Scenario(BaseScenario):
             self.concrete_quota=1
 
         elif(type=="random"):
-            # self.lumber_quota = self.n_agents*np.random.randint(1, 5)
-            # self.concrete_quota = self.n_agents*5 - self.lumber_quota
-            self.lumber_quota = np.random.randint(2*self.n_agents, 5*self.n_agents)
-            self.concrete_quota = np.random.randint(2*self.n_agents, 5*self.n_agents)
-        
+            self.lumber_quota = np.random.randint(self.lower_quota_limit, self.upper_quota_limit)
+            self.concrete_quota = np.random.randint(self.lower_quota_limit, self.upper_quota_limit)
         elif(type=="fixed"):
-            self.lumber_quota = 2 * self.n_agents
-            self.concrete_quota = 2 * self.n_agents
+            self.lumber_quota = self.upper_quota_limit
+            self.concrete_quota = self.upper_quota_limit
 
     def make_world(self):
 
@@ -310,20 +311,6 @@ class Scenario(BaseScenario):
             if(dist_to_construction_site_landmark < DIST_THRESHOLD):
                 
                 lumber, concrete = self.team[agent_index].unload()
-                # l_required = self.lumber_quota - self.lumber_delivered
-                # c_required = self.concrete_quota - self.concrete_delivered
-
-                # if(l_required < 0 and lumber > 0):
-                #     # local_reward += -lumber
-                #     local_reward += -self.dropoff_reward
-                # elif(c_required < 0 and concrete > 0):
-                #     # local_reward += -concrete
-                #     local_reward += -self.dropoff_reward
-                # elif(concrete > 0 or lumber > 0):
-                #     local_reward += self.dropoff_reward
-
-                # if((concrete > 0 or lumber > 0) and not self.total_quota_filled):
-                #     local_reward += self.dropoff_reward
                 lumber_required = self.lumber_quota - self.lumber_delivered
                 concrete_required = self.concrete_quota - self.concrete_delivered
                 pos_lumber_addition = min(0, lumber - lumber_required)
@@ -353,32 +340,6 @@ class Scenario(BaseScenario):
                     self.total_quota_filled = True
                     local_reward += self.quota_filled_reward_scalar * (self.concrete_quota + self.lumber_quota)
 
-                # l_rew = ((lumber + self.lumber_delivered) / self.lumber_quota)
-                # c_rew = ((concrete + self.concrete_delivered) / self.concrete_quota)
-                # if(l_rew > 1.0):
-                #     l_rew = 0.25*(1 - l_rew)
-                    
-                # if(c_rew > 1.0):
-                #     c_rew = 0.25*(1 - c_rew)
-
-                # local_reward += l_rew + c_rew
-
-                # once the quota is filled, penalize for surplus
-                # if((lumber_surplus > 0.01) and  (concrete_surplus > 0.01)):
-                #     local_reward += - lumber_surplus - concrete_surplus
-                #     self.quota_filled = True
-                    
-        # big reward if you meet the total quota
-        # if(self.total_quota_filled == False):
-        #     if((self.lumber_quota - self.lumber_delivered) <= 0.01 and  (self.concrete_quota - self.concrete_delivered) <= 0.01):
-        #         lumber_surplus = self.lumber_delivered - self.lumber_quota
-        #         concrete_surplus = self.concrete_delivered - self.concrete_quota
-        #         local_reward += self.quota_filled_reward_scalar - lumber_surplus - concrete_surplus
-        #         self.total_quota_filled = True
-        # else:
-        #     local_reward = 0
-
-        # time penalty only if quota is not filled
         if(not self.total_quota_filled):
             rew = local_reward + self.time_penalty
         else:
@@ -386,22 +347,28 @@ class Scenario(BaseScenario):
         return rew
 
     def observation(self, agent, world):
-        """Get the observation for each robot"""
+        """Get the observation for each robot. The observation space
+        is approximately normalized.
+        """
         observation = []
         agent_pos = (agent.state.p_pos).tolist(); agent_vel = (agent.state.p_vel).tolist()
         agent_capabilities = [agent.lumber_cap, agent.concrete_cap]
 
-        lumber_remaining_percentage = (self.lumber_quota - self.lumber_delivered) / self.lumber_quota
-        concrete_remaining_percentage = (self.concrete_quota - self.concrete_delivered) / self.concrete_quota
+        # state of the quota and how much it is filled
+        resource_status = [self.lumber_quota / self.upper_quota_limit,
+                           self.lumber_delivered / self.upper_quota_limit,
+                           self.concrete_quota / self.upper_quota_limit,
+                           self.concrete_delivered / self.upper_quota_limit]
 
-        dists_to_resource_quota = [lumber_remaining_percentage, 
-                                    concrete_remaining_percentage]
+        # state for how much the agent is holding.
         agents_current_load = [agent.lumber_loaded, agent.concrete_loaded]
 
-        # distance to lumber and concrete depot
+        # distance to lumber, concrete depot, and construction site
         dist_lumber_depot = list(agent_pos - LUMBER_DEPOT); dist_concrete_depot = list(agent_pos - CONCRETE_DEPOT); dist_construction_site = list(agent_pos - CONSTRUCTION_SITE)
+        
+        # build the base observations (i.e. without capabilities or ID)
         base_observation = [*agent_pos, *agent_vel, *dist_lumber_depot, *dist_concrete_depot, *dist_construction_site,
-                            *dists_to_resource_quota, *agents_current_load]
+                            *resource_status, *agents_current_load]
         
         if(self.config.capability_aware): # append capability    
             observation = base_observation + [*agent_capabilities]

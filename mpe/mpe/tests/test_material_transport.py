@@ -52,9 +52,9 @@ def greedy_cap_controller_step(obs, env):
     actions = []
 
     for i, agent in enumerate(agents):
-
-        lumber_quota_filled = False if obs[i][10] > 0 else True
-        concrete_quota_filled = False if obs[i][11] > 0 else True
+        
+        lumber_quota_filled = False if (obs[i][11] - obs[i][10]) < 0 else True
+        concrete_quota_filled = False if (obs[i][13] - obs[i][12]) < 0 else True
         
         # if agent is empty, it greedily goes to the depot it can carry the most from
         if(agent.empty()):
@@ -81,6 +81,28 @@ def _make_env():
 
     env = MultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.info, scenario.done)
     return env
+
+def _print_observation(obs, index):
+    """
+    Helper function to print observation
+    """
+    _obs = obs[index]
+    agent_pos = _obs[0:2]
+    agent_vel = _obs[2:4]
+    dist_lumber_depot = _obs[4:6]
+    dist_concrete_depot = _obs[6:8]
+    dist_construction_site = _obs[8:10]
+    resource_status = _obs[10:14]
+    agent_current_load = _obs[14:16]
+    print("Observation:")
+    print("\tPosition:", agent_pos)
+    print("\tVelocity:", agent_vel)
+    print("\tDist. Lumber Depot:", dist_lumber_depot)
+    print("\tDist. Concrete_Depto:", dist_concrete_depot)
+    print("\tDist. Construction Site:", dist_construction_site)
+    print("\tResource Status:", resource_status)
+    print("\tCurrent Load:", agent_current_load)
+
 def main(args):
     # env = make_env("material_transport", config="1.yaml")
     # env = gym.make("mpe:MaterialTransport-v0")
@@ -98,6 +120,7 @@ def main(args):
             
             actions = np.argmax(actions, axis=1)
             obs, reward, done, info = env.step(actions)
+            _print_observation(obs, 0)
             shared_reward = np.sum(reward)
             eps_return += shared_reward
             # print("Info", info)
