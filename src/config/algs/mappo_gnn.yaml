@@ -46,7 +46,7 @@ encoder: "mlp" # default to mlp, gru takes much longer to train
 
 t_max: 20050000
 
-# checkpoint_path: "/home/dwalkerhowell3/star_lab/ca-gnn-marl/results/models/robotarium_gym:HeterogeneousSensorNetwork-v0/2023-06-01:02-04-21-PM/1"
-# load_step: 8403264
+# checkpoint_path: "/home/dwalkerhowell3/star_lab/ca-gnn-marl/results/models/mpe:MaterialTransport-v0/2023-06-28:11-15-03-AM/38"
+# load_step: 19962424
 # evaluate: False
 # restart_from_pretrained: False

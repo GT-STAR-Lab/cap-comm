@@ -34,18 +34,25 @@ def parse_args():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser(description='Argument Parser Example')
 
+    # The name of the environment
     parser.add_argument('--environment', type=str, help='Environment argument', default="mpe:MaterialTransport-v0")
-    parser.add_argument('--experiment_path', type=str, help='Experiment path argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "experiments"))
-    parser.add_argument('--env_config_dir', type=str, help='Env config directory argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "eval_configs"))
-    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "eval_outputs"))
-    parser.add_argument('--env_config_filename', type=str, help='Env config filename argument')
+        # the directory of the evaluation configuration files
+    parser.add_argument('--eval_config_dir', type=str, help='Env config directory argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "eval_configs"))
+    # the specific evaluation configuration you want to use for this evaluation
+    parser.add_argument('--eval_config_filename', type=str, help='Env config filename argument')
+    # The sacred run of the model you want to evaluate.
     parser.add_argument('--sacred_run', type=str, help='Sacred run argument')
+    parser.add_argument('--experiment_results_dir', type=str, help='Experiment path argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "experiments"))
+    # The name of the experiment 
     parser.add_argument('--experiment_name', type=str, help='Experiment name argument')
     parser.add_argument('--render', default=False, action='store_true')
     parser.add_argument('--num_episodes', default=1, type=int, help="Number of episodes for evaluation")
     parser.add_argument('--max_num_steps', default=100, type=int, help="Maximum number of steps for an episode")
     parser.add_argument('--render_freq', default=10, type=int, help="Frequency of episodes to display/save render")
     parser.add_argument('--save_renders', default=False, action='store_true')
+    # Where evaluation results are saved.
+    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default=os.path.join(current_dir, "eval_experiments_and_configs", "mpe:MaterialTransport-v0", "eval_outputs"))
+    
 
     args = parser.parse_args()
     return args
@@ -114,6 +121,8 @@ def run_eval(env_name, model, config, env_config):
     
     totalReturn = []
     totalSteps = []
+    lumber_quota_filled, concrete_quota_filled = [], []
+    total_quota_filled = []
     totalInfo = [] # all the info returned from each episode (at end of episode)
 
     for i in tqdm(range(num_episodes)):
@@ -121,6 +130,7 @@ def run_eval(env_name, model, config, env_config):
         episodeSteps = 0
         hs = np.array([np.zeros((config.hidden_dim, )) for i in range(n_agents)])
         frames = []
+        info_list = []
         for j in range(max_num_steps):      
             
             if config.agent == "gnn":
@@ -131,7 +141,8 @@ def run_eval(env_name, model, config, env_config):
             actions = np.argmax(q_values.detach().numpy(), axis=1)
 
             obs, reward, done, info = env.step(actions)
-            
+            info_list.append(info['n'][0])
+            # print(info)
             if env_config.shared_reward:
                 episodeReturn += reward[0]
             else:
@@ -154,12 +165,18 @@ def run_eval(env_name, model, config, env_config):
         obs = np.array(env.reset())
         totalReturn.append(episodeReturn)
         totalSteps.append(episodeSteps)
+        concrete_quota_filled.append(info_list[-1]['concrete_quota_filled'])
+        lumber_quota_filled.append(info_list[-1]['lumber_quota_filled'])
+        total_quota_filled.append(info_list[-1]['total_quota_filled'])
         print("Episode Return:", episodeReturn)
   
 
     eval_data_dict = {
         "returns": totalReturn,
         "steps": totalSteps,
+        "lumber_quota_filled": lumber_quota_filled,
+        "concrete_quota_filled": concrete_quota_filled,
+        "total_quota_filled": total_quota_filled,
     }
     return(eval_data_dict)
 
@@ -168,10 +185,10 @@ if __name__ == "__main__":
     args = parse_args()
     environment = args.environment
     experiment_name = args.experiment_name
-    experiment_path = args.experiment_path
-    env_config_dir = args.env_config_dir
+    experiment_results_dir = args.experiment_results_dir
+    eval_config_dir = args.eval_config_dir
     save_eval_result_dir = args.save_eval_result_dir
-    env_config_filename = args.env_config_filename
+    eval_config_filename = args.eval_config_filename
     sacred_run = int(args.sacred_run)
     experiment_name = args.experiment_name
     render = args.render
@@ -179,22 +196,22 @@ if __name__ == "__main__":
     max_num_steps = args.max_num_steps
 
     # environment = "robotarium_gym:HeterogeneousSensorNetwork-v0"
-    # experiment_path = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl"
-    # env_config_dir = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_env_configs" # this is the where "config.yamls" for the robotarium environment are located
+    # experiment_results_dir = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl"
+    # eval_config_dir = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_env_configs" # this is the where "config.yamls" for the robotarium environment are located
     # save_eval_result_dir = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_saves"
 
 
     ##################
-    # env_config_filename = "eval_4_agents_ID_seen_bc_default.yaml"
+    # eval_config_filename = "eval_4_agents_ID_seen_bc_default.yaml"
     # sacred_run = 3; 
     # experiment_name = "SC_ID_4_agents_REDO"
     results_rel_dir="results"
     ################
 
-    save_filename = env_config_filename.split(".yaml")[0] + "_" + experiment_name + "_sacred_run_" + str(sacred_run) + ".json"
+    save_filename = eval_config_filename.split(".yaml")[0] + "_" + experiment_name + "_sacred_run_" + str(sacred_run) + ".json"
     print("Evaluation Name:", save_filename)
-    experiment_dir = os.path.join(experiment_path, experiment_name)
-    env_config_file = os.path.join(env_config_dir, env_config_filename)
+    experiment_dir = os.path.join(experiment_results_dir, experiment_name)
+    env_config_file = os.path.join(eval_config_dir, eval_config_filename)
     save_renders_dir = os.path.join(save_eval_result_dir, save_filename.split(".json")[0]+"_renderings")
     if(not os.path.exists(save_renders_dir)):
         os.mkdir(save_renders_dir)

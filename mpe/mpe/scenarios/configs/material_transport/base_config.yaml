@@ -1,5 +1,6 @@
 #Arguments needed by main.py
 scenario: MaterialTransport #name of the folder inside scenarios
+override_base_config: 'config_agent_id.yaml' # If you want to override the base level config, do so in another file. Note only the parameters you want to override need to be overriden
 
 n_actions: 5 #The number of actions available for the agent
 n_agents: 4
@@ -35,9 +36,9 @@ traits:
 
 ### For experiment 2, turn load_from_predefined_coalitions to false
 load_from_debug_agent_func: False
-load_specific_coalition: True # FINISH
+load_specific_coalition: False # FINISH
 load_from_predefined_coalitions: True # Load coalitions from 'predefined_coalition.yaml'. If False, then loads new agents based on traits distribution.
 load_from_predefined_agents: False # Uses the predefined agents from the predefined_coalition file, but samples new coalitions from these agents.
 resample: True #Set to true to resample agents/coalitions
-resample_frequency: 1
+resample_frequency: 5
 

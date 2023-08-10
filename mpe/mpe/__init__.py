@@ -7,11 +7,10 @@ import yaml
 # ----------------------------------------
 
 class DictView(object):
-        def __init__(self, d):
-            self.__dict__ = d
-        def __str__(self):
-             
-             return(str(self.__dict__))
+    def __init__(self, d):
+        self.__dict__ = d
+    def __str__(self):    
+        return(str(self.__dict__))
         
 _particles = {
     "multi_speaker_listener": "MultiSpeakerListener-v0",
@@ -46,8 +45,18 @@ for scenario_name, gymkey in _particles.items():
     # load a config for environments that have them.
     if(scenario_name in _environmnets_with_configs):
         
-        with open(os.path.join(current_dir, 'scenarios', 'configs', scenario_name, 'config.yaml'), 'r') as f:
-            config = DictView(yaml.load(f, Loader=yaml.SafeLoader))
+        config_dir = os.path.join(current_dir, 'scenarios', 'configs', scenario_name)
+        with open(os.path.join(config_dir, 'base_config.yaml'), 'r') as f:
+            config = yaml.load(f, Loader=yaml.SafeLoader)
+        # When an override config is provided within config, it will override parameters 
+        # in the base config with the parameter in the override config.
+        if config["override_base_config"]:
+            with open(os.path.join(config_dir, config["override_base_config"]), 'r') as f:
+                 override_config = yaml.load(f, Loader=yaml.SafeLoader)
+            for key, value in override_config.items():
+                if key in config:
+                    config[key] = value
+        config = DictView(config)
         scenario = scenarios.load(scenario_name + ".py").Scenario(config=config)
 
     else:
