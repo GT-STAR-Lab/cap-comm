@@ -396,7 +396,9 @@ class Scenario(BaseScenario):
         info = {'total_quota_filled': self.total_quota_filled, 'lumber_remaining (%)': lumber_remaining_percentage,
                     'concrete_remaining (%)': concrete_remaining_percentage,
                     'lumber_surplus': lumber_surplus, 'concrete_surplus': concrete_surplus,
-                    'lumber_quota_filled': self.lumber_quota_filled, 'concrete_quota_filled': self.concrete_quota_filled}
+                    'lumber_quota_filled': self.lumber_quota_filled, 'concrete_quota_filled': self.concrete_quota_filled,
+                    'lumber_quota': self.lumber_quota, 'concrete_quota': self.concrete_quota,
+                    'lumber_delivered': self.lumber_delivered, 'concrete_delivered': self.concrete_delivered}
         return info
 
     

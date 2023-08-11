@@ -12,6 +12,7 @@ import json
 import numpy as np
 import time
 from PIL import Image
+import PIL.ImageDraw as ImageDraw
 import yaml
 import re
 import importlib
@@ -56,6 +57,26 @@ def parse_args():
 
     args = parser.parse_args()
     return args
+
+def _label_with_data(frame, info):
+    im = Image.fromarray(frame)
+
+    drawer = ImageDraw.Draw(im)
+    
+    text_color = (0,0,0)
+
+    i = 0
+    string = ""
+    for key, val in info.items():
+        if isinstance(val, list):
+            text_color = val[-1]
+            val = val[0]
+        string += '\n'
+        # string += f'{key}: {val}'
+        drawer.text((im.size[0]/20,im.size[1]/18), string+f'{key}: {val}', fill=text_color)
+        
+
+    return im
 
 def load_experiment(experiment_dir, run_index, env, results_rel_dir="results"):
     """Load the sacred config and find the model path"""
@@ -141,7 +162,8 @@ def run_eval(env_name, model, config, env_config):
             actions = np.argmax(q_values.detach().numpy(), axis=1)
 
             obs, reward, done, info = env.step(actions)
-            info_list.append(info['n'][0])
+            info = info['n'][0]
+            info_list.append(info)
             # print(info)
             if env_config.shared_reward:
                 episodeReturn += reward[0]
@@ -149,18 +171,21 @@ def run_eval(env_name, model, config, env_config):
                 episodeReturn += sum(reward)
             if(render and (i % args.render_freq == 0)):
                 frame = env.render(mode="rgb_array")
+                draw_data={'Episode': i, 
+                           'Lumber Delivered / Lumber Quota': [f'{info["lumber_delivered"]}/{info["lumber_quota"]}', (255, 0, 0)],
+                           'concrete Delivered / concrete Quota': [f'{info["concrete_delivered"]}/{info["concrete_quota"]}', (0, 0, 255)]}
                 if(args.save_renders):
-                    frames.append(frame)
+                    frames.append(_label_with_data(frame, draw_data))
 
             if done[0]:
                 episodeSteps = j+1
                 break
-        
         if episodeSteps == 0:
             episodeSteps = max_num_steps
         
         if(args.save_renders and (i % args.render_freq == 0)):
-            imageio.mimsave(os.path.join(save_renders_dir, "%d.mp4"%i), frames, fps=15)
+            imageio.mimsave(os.path.join(save_renders_dir, "%d.mp4"%i), frames, fps=10)
+            print(info)
 
         obs = np.array(env.reset())
         totalReturn.append(episodeReturn)
