@@ -33,7 +33,10 @@ def outtro(kwargs):
         if(key=="title"):
             plt.title(value)
         if(key=="ylabel"):
-            plt.ylabel(value)
+            if("ylabel_fontsize" in kwargs.keys()):
+                plt.ylabel(value, fontsize=kwargs["ylabel_fontsize"])
+            else:
+                plt.ylabel(value)
         if(key=="xlabel"):
             plt.xlabel(value)
         if(key=="xlabel_fontsize"):
@@ -113,6 +116,45 @@ def plot_percentage_of_full_connected_episodes(data, order=None, **kwargs):
     df_exploded = df_exploded[["models", "connected components count at step", "time_step"]]
     
     sns.lineplot(data=df_exploded, ax=ax, x="time_step", y="connected components count at step", hue="models", hue_order=order, linewidth=4)
+
+    outtro(kwargs)
+    return(fig, ax)
+
+def plot_percentage_of_quota_remiaining(data, which_quota="lumber", order=None, **kwargs):
+    fig, ax = preamble()
+    set_color_by_order(order)
+
+    def uncum(x):
+        x = np.array(x)
+        x = x * np.arange(1, 81+1)
+        x = np.diff(x, prepend=0).tolist()
+        return(x)
+
+    df_exploded = data.explode(f"total_{which_quota}_quota_remaining_perc", ignore_index=False)
+    df_exploded["time_step"] = df_exploded.groupby(df_exploded.index).cumcount() + 1
+    df_exploded = df_exploded[["models", f"total_{which_quota}_quota_remaining_perc", "time_step"]]
+    
+    sns.lineplot(data=df_exploded, ax=ax, x="time_step", y=f"total_{which_quota}_quota_remaining_perc", hue="models", hue_order=order, linewidth=4)
+    plt.axhline(y=0.0, color='gray', linestyle='dotted')
+    outtro(kwargs)
+    return(fig, ax)
+
+def plot_total_quota_filled(data, order=None, **kwargs):
+    fig, ax = preamble()
+    set_color_by_order(order)
+
+    def update_list(lst):
+        if len(lst) < 100:
+            last_value = lst[-1]
+            lst.extend([last_value] * (100 - len(lst)))
+        return lst
+    
+    data['total_quota_filled_per_step'] = data['total_quota_filled_per_step'].apply(update_list)
+    df_exploded = data.explode(f"total_quota_filled_per_step", ignore_index=False)
+    df_exploded["time_step"] = df_exploded.groupby(df_exploded.index).cumcount() + 1
+    df_exploded = df_exploded[["models", f"total_quota_filled_per_step", "time_step"]]
+    
+    sns.lineplot(data=df_exploded, ax=ax, x="time_step", y=f"total_quota_filled_per_step", hue="models", hue_order=order, linewidth=4)
 
     outtro(kwargs)
     return(fig, ax)

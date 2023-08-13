@@ -51,6 +51,7 @@ for scenario_name, gymkey in _particles.items():
         # When an override config is provided within config, it will override parameters 
         # in the base config with the parameter in the override config.
         if config["override_base_config"]:
+            print(f"overriding base config for {scenario_name} with {config['override_base_config']}")
             with open(os.path.join(config_dir, config["override_base_config"]), 'r') as f:
                  override_config = yaml.load(f, Loader=yaml.SafeLoader)
             for key, value in override_config.items():

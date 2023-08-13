@@ -143,12 +143,18 @@ def run_eval(env_name, model, config, env_config):
     totalReturn = []
     totalSteps = []
     lumber_quota_filled, concrete_quota_filled = [], []
+    total_lumber_quota_remaining_perc, total_concrete_quota_remaining_perc = [], []
+    toal_toal_quota_filled_per_step = []
     total_quota_filled = []
     totalInfo = [] # all the info returned from each episode (at end of episode)
 
     for i in tqdm(range(num_episodes)):
         episodeReturn = 0
         episodeSteps = 0
+        lumber_quota_reamining_perc = []
+        concrete_quota_remaining_perc = []
+        total_quota_filled_per_step = []
+        rewards = []
         hs = np.array([np.zeros((config.hidden_dim, )) for i in range(n_agents)])
         frames = []
         info_list = []
@@ -162,8 +168,14 @@ def run_eval(env_name, model, config, env_config):
             actions = np.argmax(q_values.detach().numpy(), axis=1)
 
             obs, reward, done, info = env.step(actions)
+            rewards.append(reward[0])
             info = info['n'][0]
             info_list.append(info)
+            lumber_quota_reamining_perc.append(info_list[-1]['lumber_remaining (%)'])
+            concrete_quota_remaining_perc.append(info_list[-1]['concrete_remaining (%)'])
+            lumber_delivered, lumber_quota = info["lumber_delivered"], info["lumber_quota"]
+            concrete_delivered, concrete_quota = info["concrete_delivered"], info["concrete_quota"]
+            total_quota_filled_per_step.append(float(info["total_quota_filled"]))
             # print(info)
             if env_config.shared_reward:
                 episodeReturn += reward[0]
@@ -173,7 +185,7 @@ def run_eval(env_name, model, config, env_config):
                 frame = env.render(mode="rgb_array")
                 draw_data={'Episode': i, 
                            'Lumber Delivered / Lumber Quota': [f'{info["lumber_delivered"]}/{info["lumber_quota"]}', (255, 0, 0)],
-                           'concrete Delivered / concrete Quota': [f'{info["concrete_delivered"]}/{info["concrete_quota"]}', (0, 0, 255)]}
+                           'Concrete Delivered / Concrete Quota': [f'{info["concrete_delivered"]}/{info["concrete_quota"]}', (0, 0, 255)]}
                 if(args.save_renders):
                     frames.append(_label_with_data(frame, draw_data))
 
@@ -188,20 +200,30 @@ def run_eval(env_name, model, config, env_config):
             print(info)
 
         obs = np.array(env.reset())
+        # rewards = np.array(rewards)
+        # episodeReturn = np.sum(rewards - np.mean(rewards)) / (np.std(rewards) + 1e-10)
         totalReturn.append(episodeReturn)
         totalSteps.append(episodeSteps)
         concrete_quota_filled.append(info_list[-1]['concrete_quota_filled'])
         lumber_quota_filled.append(info_list[-1]['lumber_quota_filled'])
         total_quota_filled.append(info_list[-1]['total_quota_filled'])
-        print("Episode Return:", episodeReturn)
+        total_lumber_quota_remaining_perc.append(lumber_quota_reamining_perc)
+        total_concrete_quota_remaining_perc.append(concrete_quota_remaining_perc)
+        toal_toal_quota_filled_per_step.append(total_quota_filled_per_step)
+        # print("Episode Return:", episodeReturn)
   
-
+    # totalReturn = np.array(totalReturn)
+    # totalReturn = (totalReturn - np.mean(totalReturn)) / (np.std(totalReturn) + 1e-15)
+    # totalReturn = totalReturn.tolist()
     eval_data_dict = {
         "returns": totalReturn,
         "steps": totalSteps,
         "lumber_quota_filled": lumber_quota_filled,
         "concrete_quota_filled": concrete_quota_filled,
         "total_quota_filled": total_quota_filled,
+        "total_lumber_quota_remaining_perc": total_lumber_quota_remaining_perc,
+        "total_concrete_quota_remaining_perc": total_concrete_quota_remaining_perc,
+        "total_quota_filled_per_step": toal_toal_quota_filled_per_step
     }
     return(eval_data_dict)
 
@@ -237,8 +259,8 @@ if __name__ == "__main__":
     print("Evaluation Name:", save_filename)
     experiment_dir = os.path.join(experiment_results_dir, experiment_name)
     env_config_file = os.path.join(eval_config_dir, eval_config_filename)
-    save_renders_dir = os.path.join(save_eval_result_dir, save_filename.split(".json")[0]+"_renderings")
-    if(not os.path.exists(save_renders_dir)):
+    save_renders_dir = os.path.join(save_eval_result_dir, 'renderings', save_filename.split(".json")[0]+"_renderings")
+    if(not os.path.exists(save_renders_dir) and args.save_renders):
         os.mkdir(save_renders_dir)
 
     config, model_dir, tb_dir = load_experiment(experiment_dir, sacred_run, environment, results_rel_dir=results_rel_dir)

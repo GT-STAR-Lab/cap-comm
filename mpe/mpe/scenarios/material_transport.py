@@ -130,8 +130,9 @@ class Scenario(BaseScenario):
         func_args = copy.deepcopy(self.config.traits['lumber'])
         del func_args['distribution']
         for idx in range(self.n_agents):
-            lumber_cap = int(getattr(np.random, self.config.traits["lumber"]["distribution"])(**func_args))
-            concrete_cap = self.max_cap - lumber_cap
+            lumber_cap = getattr(np.random, self.config.traits["lumber"]["distribution"])(**func_args)
+            concrete_cap = 1.0 - lumber_cap
+            # concrete_cap = getattr(np.random, self.config.traits["concrete"]["distribution"])(**func_args)
             default_id = ['0'] * (self.n_agents * self.config.n_coalitions)
             agent = self._build_agent(world, str(idx), idx, default_id, 
                                        lumber_cap=lumber_cap, concrete_cap=concrete_cap)

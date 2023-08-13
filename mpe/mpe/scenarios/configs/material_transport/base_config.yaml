@@ -1,6 +1,6 @@
 #Arguments needed by main.py
 scenario: MaterialTransport #name of the folder inside scenarios
-override_base_config: 'config_agent_id.yaml' # If you want to override the base level config, do so in another file. Note only the parameters you want to override need to be overriden
+override_base_config: 'config_capability_awareness.yaml' # If you want to override the base level config, do so in another file. Note only the parameters you want to override need to be overriden
 
 n_actions: 5 #The number of actions available for the agent
 n_agents: 4
@@ -26,11 +26,11 @@ coalition_file: "coalitions_4_robots.yaml"
 # normalized traits
 traits:
   lumber:
-    distribution: 'randint'
+    distribution: 'uniform'
     low: 0
     high: 1.0
   water:
-    distribution: 'randint'
+    distribution: 'uniform'
     low: 0
     high: 1.0
 
