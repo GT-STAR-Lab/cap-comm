@@ -104,10 +104,11 @@ def load_model(models_dir, config):
     model_file = os.path.join(models_dir, str(ckt), 'agent.th')
     model_weights = torch.load(model_file, map_location=torch.device('cpu'))
     input_dim = model_weights[list(model_weights.keys())[0]].shape[1]
+    print("Input dim", input_dim)
 
     if(hasattr(config, "capabilities_skip_gnn")):
         if(config.capabilities_skip_gnn):
-            input_dim += 1
+            input_dim += 2
 
     if config.agent=='mlp':
         model = MLPAgent(input_dim, config)
@@ -241,6 +242,7 @@ if __name__ == "__main__":
     render = args.render
     num_episodes = args.num_episodes
     max_num_steps = args.max_num_steps
+    np.random.seed(42)
 
     # environment = "robotarium_gym:HeterogeneousSensorNetwork-v0"
     # experiment_results_dir = "/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl"

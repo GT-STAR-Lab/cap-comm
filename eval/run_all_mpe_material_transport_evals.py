@@ -59,50 +59,126 @@ import sys
 # }
 
 eval_dict = {
-    # only non-id models can do unseen
-    # ======================= UNSEEN AGENTS ==========================
-    # The following three evaluations are only for capability aware models
-    # since they can handle unseen agents.
-    # unseen 3 agents (CA)
-    "eval_3_agents_CA_unseen.yaml" : {
+    # # only non-id models can do unseen
+    # # ======================= UNSEEN AGENTS ==========================
+    # # The following three evaluations are only for capability aware models
+    # # since they can handle unseen agents.
+    # # unseen 3 agents (CA)
+    # "eval_3_agents_CA_unseen.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen 4 agents (CA)
+    # "eval_4_agents_CA_unseen.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen 5 agents (CA)
+    # "eval_5_agents_CA_unseen.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    "eval_8_agents_CA_unseen.yaml" : {
         "GNN_CA_4_agents_MT" : [1, 2, 43],
+        "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+        "MLP_CA_4_agents_MT" : [1, 2, 3]
     },
-    # unseen 4 agents (CA)
-    "eval_4_agents_CA_unseen.yaml" : {
-        "GNN_CA_4_agents_MT" : [1, 2, 43]
-    },
-    # unseen 5 agents (CA)
-    "eval_5_agents_CA_unseen.yaml" : {
-        "GNN_CA_4_agents_MT" : [1, 2, 43]
-    },
-    #======================= UNSEEN TEAMS =============================
-    # The next evaluations are for teams of unseen teams, but seen agents
-    # thus agent IDs can participate
-    # unseen teams 3 agents (CA)
-    "eval_3_agents_CA_unseen_teams.yaml" : {
+    "eval_10_agents_CA_unseen.yaml" : {
         "GNN_CA_4_agents_MT" : [1, 2, 43],
+        "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+        "MLP_CA_4_agents_MT" : [1, 2, 3]
     },
-    # unseen teams 4 agents (CA)
-    "eval_4_agents_CA_unseen_teams.yaml" : {
-        "GNN_CA_4_agents_MT" : [1, 2, 43]
+    "eval_15_agents_CA_unseen.yaml" : {
+        "GNN_CA_4_agents_MT" : [1, 2, 43],
+        "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+        "MLP_CA_4_agents_MT" : [1, 2, 3]
     },
-    # unseen teams 5 agents (CA)
-    "eval_5_agents_CA_unseen_teams.yaml" : {
-        "GNN_CA_4_agents_MT" : [1, 2, 43]
-    },
-    # # unseen teams 3 agents (ID)
-    "eval_3_agents_ID_unseen_teams.yaml" : {
-        "GNN_ID_4_agents_MT" : [1, 2, 54],
-    },
-    # unseen teams 4 agents (ID)
-    "eval_4_agents_ID_unseen_teams.yaml" : {
-        "GNN_ID_4_agents_MT" : [1, 2, 54]
-    },
-    # unseen teams 5 agents (ID)
-    "eval_5_agents_ID_unseen_teams.yaml" : {
-        "GNN_ID_4_agents_MT" : [1, 2, 54]
-    },
-    }
+    # #======================= UNSEEN TEAMS =============================
+    # # The next evaluations are for teams of unseen teams, but seen agents
+    # # thus agent IDs can participate
+    # # unseen teams 3 agents (CA)
+    # "eval_3_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen teams 4 agents (CA)
+    # "eval_4_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen teams 5 agents (CA)
+    # "eval_5_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # # # unseen teams 3 agents (ID)
+    # "eval_3_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen teams 4 agents (ID)
+    # "eval_4_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+    # # unseen teams 5 agents (ID)
+    # "eval_5_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+    
+    # unseen teams 8 agents (CA)
+    # "eval_8_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+
+    # "eval_8_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+
+    # "eval_10_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+
+    # "eval_10_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+
+    # "eval_15_agents_CA_unseen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+
+    # "eval_15_agents_ID_unseen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+    # },
+    #======================= SEEN TEAMS (TRAINING SET) ==========================
+
+    # "eval_4_agents_CA_seen_teams.yaml" : {
+    #     "GNN_CA_4_agents_MT" : [1, 2, 43],
+    #     "GNN_CA_SKIP_4_agents_MT" : [1, 2, 3],
+    #     "MLP_CA_4_agents_MT" : [1, 2, 3]
+    # },
+    # "eval_4_agents_ID_seen_teams.yaml" : {
+    #     "GNN_ID_4_agents_MT" : [1, 2, 54],
+    #     "MLP_ID_4_agents_MT" : [1, 2, 3]
+
+    # },
+}
 num_episodes=1000
 max_num_steps=100
 render_freq=10
@@ -124,7 +200,7 @@ if __name__ == "__main__":
     python_eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval_mpe_material_transport.py")
 
     subprocesses = [] # list to hold the subprocesses
-    max_subprocesses = 8
+    max_subprocesses = 12
     current_number_of_suprocesses = 0
     total_ran = 0
     # begin evaluations

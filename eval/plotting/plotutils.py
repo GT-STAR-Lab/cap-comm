@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import numpy as np
+import pandas as pd
 
 def preamble():
     
@@ -45,6 +46,13 @@ def outtro(kwargs):
             plt.ylim(value)
         if(key=="xlim"):
             plt.xlim(value)
+        if(key=="remove_x_ticks" and value):
+            x_axis = ax.axes.get_xaxis()
+            x_axis.set_visible(False)
+    
+    if(ax.get_legend()):
+        ax.get_legend().remove()
+
 
     if("save_path" in kwargs.keys()):
         value = kwargs["save_path"]
@@ -133,10 +141,13 @@ def plot_percentage_of_quota_remiaining(data, which_quota="lumber", order=None, 
     df_exploded = data.explode(f"total_{which_quota}_quota_remaining_perc", ignore_index=False)
     df_exploded["time_step"] = df_exploded.groupby(df_exploded.index).cumcount() + 1
     df_exploded = df_exploded[["models", f"total_{which_quota}_quota_remaining_perc", "time_step"]]
-    
+    df_exploded[f"total_{which_quota}_quota_remaining_perc"] = df_exploded[f"total_{which_quota}_quota_remaining_perc"] * -100.0
     sns.lineplot(data=df_exploded, ax=ax, x="time_step", y=f"total_{which_quota}_quota_remaining_perc", hue="models", hue_order=order, linewidth=4)
     plt.axhline(y=0.0, color='gray', linestyle='dotted')
+    # ax.set_yticklabels(["%d" % (int(-1*float(x)) if x != 0 else x) for x in ax.get_yticks()])
+
     outtro(kwargs)
+    ax.set_yticklabels(["%d" % (int(-1*float(x)) if x != 0 else x) for x in ax.get_yticks()])
     return(fig, ax)
 
 def plot_total_quota_filled(data, order=None, **kwargs):
@@ -155,20 +166,22 @@ def plot_total_quota_filled(data, order=None, **kwargs):
     df_exploded = df_exploded[["models", f"total_quota_filled_per_step", "time_step"]]
     
     sns.lineplot(data=df_exploded, ax=ax, x="time_step", y=f"total_quota_filled_per_step", hue="models", hue_order=order, linewidth=4)
-
+    ax.set_yticklabels(["%d" % (int(100*float(x))) for x in ax.get_yticks()])
     outtro(kwargs)
     return(fig, ax)
 
-def plot_training_curves(data, smoothing_factor=1.0, hue_order=None, **kwargs):
+def plot_training_curves(data, scaling_factor=1.0, hue_order=None, **kwargs):
     fig, ax = preamble()
     set_color_by_order(hue_order)
 
-    def smooth_data(group, smoothing_factor=smoothing_factor):
-        group['smoothed_y'] = group['values'].ewm(alpha=smoothing_factor).mean()
+    def smooth_data(group, smoothing_factor):
+        group['smoothed_y'] = group["values"].ewm(alpha=smoothing_factor).mean()
         return group
 
     # smooth each model with each seed
-    smoothed_data = data.groupby(['model', 'seed']).apply(smooth_data)
+    # smoothed_data = data.groupby(['model', 'seed']).apply(lambda x: smooth_data(x, scaling_factor))
+    smoothed_data = data.groupby('model').apply(lambda x : x.groupby('seed').apply(lambda x: smooth_data(x, scaling_factor)))
+    print(len(data.groupby('model')), len(data.groupby(['model', 'seed'])))
     sns.lineplot(data=smoothed_data, x="steps", y="smoothed_y", 
                  errorbar='sd', hue="model", hue_order=hue_order, linewidth=4)
 
