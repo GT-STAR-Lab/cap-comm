@@ -5,3 +5,5 @@ multiagent-particle-envs/.git
 legacy/
 results/
 dummy/
+experiment_copies/
+launch.json

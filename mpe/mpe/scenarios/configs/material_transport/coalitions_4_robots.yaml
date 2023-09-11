@@ -1,0 +1,88 @@
+train:
+  coalitions:
+    4_agents:
+      0:
+        0:
+          concrete_cap: 0.9
+          id: '00000000000000000001'
+          lumber_cap: 0.1
+        1:
+          concrete_cap: 0.7
+          id: '00000100000000000000'
+          lumber_cap: 0.3
+        2:
+          concrete_cap: 1.0
+          id: '00000000000000100000'
+          lumber_cap: 0.0
+        3:
+          concrete_cap: 0.0
+          id: '00001000000000000000'
+          lumber_cap: 1.0
+      1:
+        0:
+          concrete_cap: 0.9
+          id: '00000000010000000000'
+          lumber_cap: 0.1
+        1:
+          concrete_cap: 0.7
+          id: '00000000000001000000'
+          lumber_cap: 0.3
+        2:
+          concrete_cap: 0.0
+          id: '00000000000000010000'
+          lumber_cap: 1.0
+        3:
+          concrete_cap: 0.2
+          id: '00000000000000000010'
+          lumber_cap: 0.8
+      2:
+        0:
+          concrete_cap: 0.8
+          id: '00000010000000000000'
+          lumber_cap: 0.2
+        1:
+          concrete_cap: 0.3
+          id: '00000000000010000000'
+          lumber_cap: 0.7
+        2:
+          concrete_cap: 0.4
+          id: '00000000000000000100'
+          lumber_cap: 0.6
+        3:
+          concrete_cap: 0.7
+          id: '00000000001000000000'
+          lumber_cap: 0.3
+      3:
+        0:
+          concrete_cap: 1.0
+          id: '01000000000000000000'
+          lumber_cap: 0.0
+        1:
+          concrete_cap: 0.0
+          id: '00000000000100000000'
+          lumber_cap: 1.0
+        2:
+          concrete_cap: 0.1
+          id: '00100000000000000000'
+          lumber_cap: 0.9
+        3:
+          concrete_cap: 0.3
+          id: '00000000000000001000'
+          lumber_cap: 0.7
+      4:
+        0:
+          concrete_cap: 0.6
+          id: '00000001000000000000'
+          lumber_cap: 0.4
+        1:
+          concrete_cap: 0.3
+          id: '00000000100000000000'
+          lumber_cap: 0.7
+        2:
+          concrete_cap: 0.7
+          id: '10000000000000000000'
+          lumber_cap: 0.3
+        3:
+          concrete_cap: 0.0
+          id: '00010000000000000000'
+          lumber_cap: 1.0

@@ -5,9 +5,9 @@ mask_before_softmax: True
 
 runner: "parallel"
 
-buffer_size: 10
+buffer_size: 64
 batch_size_run: 64
-batch_size: 64
+batch_size: 10
 
 env_args:
   state_last_action: False # critic adds last action internally
@@ -26,7 +26,7 @@ learner: "ppo_learner"
 entropy_coef: 0.01
 use_rnn: False
 use_gnn: False #Weird things happen when this is true... The code working is not one of them :/
-standardise_returns: True
+standardise_returns: False
 standardise_rewards: False
 q_nstep: 5 # 1 corresponds to normal r + gammaV
 critic_type: "cv_critic"
@@ -38,10 +38,15 @@ agent: "gnn"
 num_layers: 1
 encoder: "mlp" # default to mlp, gru takes much longer to train
 
-action_selector: "epsilon_greedy"
-epsilon_start: 1.0
-epsilon_finish: 0.01
-epsilon_anneal_time: 10000
-evaluation_epsilon: 0.0
+# action_selector: "epsilon_greedy"
+# epsilon_start: 1.0
+# epsilon_finish: 0.01
+# epsilon_anneal_time: 50000
+# evaluation_epsilon: 0.0
 
-t_max: 2000000
+t_max: 20050000
+
+# checkpoint_path: "/home/dwalkerhowell3/star_lab/ca-gnn-marl/results/models/mpe:MaterialTransport-v0/2023-06-28:11-15-03-AM/38"
+# load_step: 19962424
+# evaluate: False
+# restart_from_pretrained: False

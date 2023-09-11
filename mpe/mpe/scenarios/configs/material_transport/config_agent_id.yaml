@@ -1,0 +1,6 @@
+capability_aware: False #Either the agent know what class they're in or their capabilities. Make sure this matches training
+agent_id: True #If capability_aware is False, this determines if the class id is appended instead or not
+
+
+
+

@@ -1,9 +1,17 @@
 from gym.envs.registration import register
 import mpe.scenarios as scenarios
 import time
+import os
+import yaml
 # Multiagent envs
 # ----------------------------------------
 
+class DictView(object):
+    def __init__(self, d):
+        self.__dict__ = d
+    def __str__(self):    
+        return(str(self.__dict__))
+        
 _particles = {
     "multi_speaker_listener": "MultiSpeakerListener-v0",
     "simple_adversary": "SimpleAdversary-v0",
@@ -19,26 +27,58 @@ _particles = {
     "heterogeneous_sensor_network": "HeterogeneousSensorNetwork-v0",
     "heterogeneous_material_transport": "HeterogeneousMaterialTransport-v0",
     "terrain_aware_navigation_ca": "TerrainAwareNavigationCA-v0",
-    "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
-    "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
+    # "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
+    # "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
     "terrain_dependant_navigation": "TerrainDependantNavigation-v0",
     "search_and_capture": "SearchAndCapture-v0",
+    "material_transport": "MaterialTransport-v0"
 }
+_environmnets_with_configs = [
+     "material_transport"
+]
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 for scenario_name, gymkey in _particles.items():
-    scenario = scenarios.load(scenario_name + ".py").Scenario()
+
+    
+    # load a config for environments that have them.
+    if(scenario_name in _environmnets_with_configs):
+        
+        config_dir = os.path.join(current_dir, 'scenarios', 'configs', scenario_name)
+        with open(os.path.join(config_dir, 'base_config.yaml'), 'r') as f:
+            config = yaml.load(f, Loader=yaml.SafeLoader)
+        # When an override config is provided within config, it will override parameters 
+        # in the base config with the parameter in the override config.
+        if config["override_base_config"]:
+            print(f"overriding base config for {scenario_name} with {config['override_base_config']}")
+            with open(os.path.join(config_dir, config["override_base_config"]), 'r') as f:
+                 override_config = yaml.load(f, Loader=yaml.SafeLoader)
+            for key, value in override_config.items():
+                if key in config:
+                    config[key] = value
+        config = DictView(config)
+        scenario = scenarios.load(scenario_name + ".py").Scenario(config=config)
+
+    else:
+         scenario = scenarios.load(scenario_name + ".py").Scenario()
     world = scenario.make_world()
 
+    kwargs={
+            "world": world,
+            "reset_callback": scenario.reset_world,
+            "reward_callback": scenario.reward,
+            "observation_callback": scenario.observation
+    }
+
+    if(scenario_name == "material_transport"):
+         kwargs["done_callback"] = scenario.done
+         kwargs["info_callback"] = scenario.info
     # Registers multi-agent particle environments:
     register(
         gymkey,
         entry_point="mpe.environment:MultiAgentEnv",
-        kwargs={
-            "world": world,
-            "reset_callback": scenario.reset_world,
-            "reward_callback": scenario.reward,
-            "observation_callback": scenario.observation,
-        },
+        kwargs=kwargs
     )
 
 # Registers the custom double spread environment:

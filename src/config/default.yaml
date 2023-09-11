@@ -15,6 +15,7 @@ learner_log_interval: 2000 # Log training stats every {} timesteps
 t_max: 10000 # Stop running after this many timesteps
 use_cuda: False # Use gpu by default unless it isn't available
 buffer_cpu_only: True # If true we won't keep all of the replay buffer in vram
+restart_from_pretrained: False # If true, it is expected you are loading in a checkpoint model, be restarting training from t=0
 
 # --- Logging options ---
 use_tensorboard: True # Log results to tensorboard
@@ -24,7 +25,7 @@ checkpoint_path: "" # Load a checkpoint from this path
 evaluate: False # Evaluate model for test_nepisode episodes and quit (no training)
 load_step: 0 # Load model trained on this many timesteps (0 if choose max possible)
 save_replay: False # Saving the replay of the model loaded from checkpoint_path
-local_results_path: "../results" # Path for local results
+local_results_path: "results" # Path for local results
 
 # --- RL hyperparameters ---
 gamma: 0.99
@@ -42,13 +43,15 @@ use_gnn: False
 hidden_dim: 64 # Size of hidden state for default rnn agent
 obs_agent_id: False # Include the agent's one_hot id in the observation
 obs_last_action: False # Include the agent's last action (one_hot) in the observation
-num_layers: 0
+num_layers: 1
 msg_hidden_dim: 64
 msg_out_size: 16
 agent_dist: False # Edge connection based on distance between agents
 unit_type: False # Edege connection for agents of same type
 separated_policy: False
 use_graph_attention: False
+normalize_adj_matrix: False
+capability_shape: 2 # the shape of the capability vector (# of dimensions). Only used for dual channel models
 ## Add more heuristics
 
 # --- Experiment running params ---

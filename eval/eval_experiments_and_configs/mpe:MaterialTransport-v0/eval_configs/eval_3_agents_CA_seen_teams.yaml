@@ -1,0 +1,44 @@
+#Arguments needed by main.py
+scenario: MaterialTransport #name of the folder inside scenarios
+override_base_config: None # If you want to override the base level config, do so in another file. Note only the parameters you want to override need to be overriden
+
+n_actions: 5 #The number of actions available for the agent
+n_agents: 3
+shared_reward: True
+
+capability_aware: True #Either the agent know what class they're in or their capabilities. Make sure this matches training
+agent_id: False #If capability_aware is False, this determines if the class id is appended instead or not
+
+# reward details
+time_penalty: -0.005
+lumber_pickup_reward: 0.25 # reward given to an agent for pickup up lumber if their lumber capacity is > 0
+concrete_pickup_reward: 0.25 # reward given to an agent for pickup of concrete if their capcitity is > 0.
+dropoff_reward: 0.75 # the amount of reward an agent gets for dropping off a resource WITHOUT exceeding the amount
+quota_filled_reward_scalar: 0.25 # not used
+surplus_penalty_scalar: 0.10 # multply by the surplus penalty to have an appropriate reward scale.
+
+#Information needed to generate the predefined agents and coalitions
+n_train_agents: 20
+n_test_agents: 20
+n_coalitions: 5
+coalition_file: "coalitions_4_robots.yaml"
+
+# normalized traits
+traits:
+  lumber:
+    distribution: 'uniform'
+    low: 0
+    high: 1.0
+  water:
+    distribution: 'uniform'
+    low: 0
+    high: 1.0
+
+### For experiment 2, turn load_from_predefined_coalitions to false
+load_from_debug_agent_func: False
+load_specific_coalition: False # FINISH
+load_from_predefined_coalitions: True # Load coalitions from 'predefined_coalition.yaml'. If False, then loads new agents based on traits distribution.
+load_from_predefined_agents: False # Uses the predefined agents from the predefined_coalition file, but samples new coalitions from these agents.
+resample: True #Set to true to resample agents/coalitions
+resample_frequency: 5
+

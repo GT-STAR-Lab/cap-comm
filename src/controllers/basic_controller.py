@@ -49,7 +49,7 @@ class BasicMAC:
         avail_actions = ep_batch["avail_actions"][:, t]
 
         # use this if just the actor is a gnn.
-        if self.args.agent == "gnn" or self.args.agent == "gcn":
+        if self.args.agent == "gnn" or self.args.agent == "gat" or self.args.agent == "dual_channel_gnn" or self.args.agent == "dual_channel_gat":
             agent_outs, _ = self.agent(agent_inputs, ep_batch["adj_matrix"][:, t, ...])
         
         # use gnn has the gnn as the comm layer, and mlps for both actor and critic. (like GPPO)
@@ -107,16 +107,16 @@ class BasicMAC:
 
     def load_models(self, path):
         self.agent.load_state_dict(th.load("{}/agent.th".format(path), map_location=lambda storage, loc: storage))
-        self.gnn.load_state_dict(th.load("{}/gnn.th".format(path), map_location=lambda storage, loc: storage))
+        if self.args.separated_policy:
+            self.gnn.load_state_dict(th.load("{}/gnn.th".format(path), map_location=lambda storage, loc: storage))
   
     def _build_agents(self, input_shape):
         """
         Agent is the actor portion of the policy
         """
         print("\033[31m" + self.args.agent + "\033[0m")
-        print("Agent input size: ", input_shape, self.args)
         self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
-        summary(self.agent, input_size=input_shape)
+        # summary(self.agent, input_size=input_shape)
         print("\033[31m" + str(type(self.agent)) + "\033[0m")
 
     def _build_critic(self, input_shape):

@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.utils import dense_to_sparse
-from modules.encoder import REGISTRY as encoder_REGISTRY
+import sys
 
 class GNNAgent(torch.nn.Module):
     def __init__(self, input_shape, args, training=True):
@@ -12,20 +11,32 @@ class GNNAgent(torch.nn.Module):
         self.training = training
         self.input_shape = input_shape
         self.message_passes = self.args.num_layers
-
+        self.capabilities_skip_gnn = False
+        if(hasattr(self.args, "capabilities_skip_gnn")):
+            if(self.args.capabilities_skip_gnn):
+                self.capabilities_skip_gnn = True
+                input_shape = input_shape - self.args.capability_shape
         
-        # self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
-        #                               nn.ReLU(inplace=True))
-        self.encoder = encoder_REGISTRY[self.args.encoder](input_shape, self.args.hidden_dim, self.args.hidden_dim)
+        self.encoder = nn.Sequential(nn.Linear(input_shape,self.args.hidden_dim),
+                                      nn.ReLU(inplace=True))
+        # self.encoder = encoder_REGISTRY[self.args.encoder](input_shape, self.args.hidden_dim, self.args.hidden_dim)
 
         if self.args.use_graph_attention:
             self.messages = nn.MultiHeadAttention(n_heads=self.args.n_heads,input_dim=self.args.hidden_dim,embed_dim=self.embed_dim)
         else:
             self.messages = nn.Sequential(nn.Linear(self.args.msg_hidden_dim,self.args.msg_hidden_dim, bias=False),
-                                     nn.ReLU(inplace=True))
+                                     nn.ReLU(inplace=True),
+                                     nn.Linear(self.args.msg_hidden_dim,self.args.msg_hidden_dim, bias=False))
 
+        policy_head_input_shape = 0
+        if(self.capabilities_skip_gnn):
+            policy_head_input_shape += self.args.capability_shape
+        if(self.message_passes > 0):
+            policy_head_input_shape += self.args.msg_hidden_dim + self.args.hidden_dim
+        else:
+            policy_head_input_shape += self.args.hidden_dim
 
-        self.policy_head = nn.Sequential(nn.Linear(self.args.msg_hidden_dim + self.args.hidden_dim if self.message_passes > 0 else self.args.hidden_dim, self.args.hidden_dim),
+        self.policy_head = nn.Sequential(nn.Linear(policy_head_input_shape, self.args.hidden_dim),
                                          nn.ReLU(inplace=True))
 
         self.actions = nn.Linear(self.args.hidden_dim, self.args.n_actions)
@@ -55,12 +66,17 @@ class GNNAgent(torch.nn.Module):
         return torch.matmul(torch.matmul(D_hat, A_hat), D_hat)
 
     def forward(self,x, adj_matrix):
-        # inp should be (batch_size,input_size)
-        # inp - {iden, vel(2), pos(2), entities(...)}
+        
+        if(self.capabilities_skip_gnn):
+            capabilities = x[:, -self.args.capability_shape:]
+            x = x[:, :-self.args.capability_shape]
 
-
-        # Get the Normalized adjacency matrix       
-        comm_mat = self.calc_adjacency_hat(adj_matrix)
+        # Get the Normalized adjacency matrix, and add self-loops  
+        if(self.args.normalize_adj_matrix):     
+            comm_mat = self.calc_adjacency_hat(adj_matrix)
+        else:
+            comm_mat = adj_matrix.float()
+        
         #comm_mat = comm_mat#.unsqueeze #(0).repeat(batch_size,1,1)
        
         # comm_mat - {batch_size, N, N}
@@ -80,10 +96,14 @@ class GNNAgent(torch.nn.Module):
         
         # passess the agents embedded encoding to the policy head.
         msg = msg.view(-1, self.args.hidden_dim) # shape is (batch_size * N, self.args.hidden_dim)
+        # print("Message shape", msg.shape, "Encoding shape", enc.shape)
         if self.message_passes > 0:
             h = torch.cat((enc,msg), dim=-1)
         else:
             h = enc
+
+        if self.capabilities_skip_gnn:
+            h = torch.cat((h, capabilities), dim=-1)
 
         h = self.policy_head(h)
         actions = self.actions(h)
@@ -96,15 +116,23 @@ class DualChannelGNNAgent(torch.nn.Module):
     """
     Dual Channel gnn (Agents that have two types of observations which they want to learn to communicate separately)
     """
-    def __init__(self, input_shape_a, input_shape_b, args, training=True):
+    def __init__(self, input_shape, args, training=True):
         """
         """
         super(DualChannelGNNAgent, self).__init__()
         self.args = args
-        self.channel_A = GNNAgent(input_shape_a, args=args, training=training)
-        self.channel_B = GNNAgent(input_shape_b, args=args, training=training)
+        self.capability_shape = self.args.capability_shape
+        self.input_shape_a = input_shape - self.capability_shape
+        self.channel_A = GNNAgent(self.input_shape_a, args=args, training=training)
+        self.channel_B = GNNAgent(self.capability_shape, args=args, training=training)
 
-        self.actions = nn.Linear(self.args.hidden_dim, self.args.n_actions)
+        self.actions = nn.Linear(2*self.args.hidden_dim, self.args.n_actions)
+
+    def init_hidden(self):
+        # make hidden states on same device as model
+        self.channel_A.init_hidden()
+        self.channel_B.init_hidden()
+        return torch.zeros(self.args.hidden_dim) #self.encoder.weight.new(1, self.args.hidden_dim).zero_()
 
     def forward(self, x, adj_matrix):
         """
@@ -112,17 +140,16 @@ class DualChannelGNNAgent(torch.nn.Module):
         through the model
 
         params:
-            x (dict of tensor) : A dictionary of format {'a': tensor, 'b':tensor}, where 'a' and 'b' are channels
+            x tensor
         returns:
             action (tensor)
             h (tensor) : concatenation of the two gnn outputs.
         """
-        x_a = x["a"]
-        x_b = x["b"]
-
+        x_a = x[:, :self.input_shape_a]
+        x_b = x[:, self.input_shape_a:] # should be the capabilities
         _, h_a = self.channel_A(x_a, adj_matrix)
         _, h_b = self.channel_B(x_b, adj_matrix)
 
-        h = torch.concat((h_a, h_b))
+        h = torch.concat((h_a, h_b), dim=-1)
         action = self.actions(h)
         return(action, h)

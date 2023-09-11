@@ -71,6 +71,7 @@ class EpisodeRunner:
 
             reward, terminated, env_info = self.env.step(actions[0])
             episode_return += reward
+            # self.env.render()
 
             post_transition_data = {
                 "actions": actions,
@@ -78,7 +79,8 @@ class EpisodeRunner:
                 "terminated": [(terminated != env_info.get("episode_limit", False),)],
                 # "adj_matrix": [self.env.get_adj_matrix()],
             }
-
+            if(test_mode):
+                self.env.render()
             self.batch.update(post_transition_data, ts=self.t)
 
             self.t += 1
@@ -109,6 +111,7 @@ class EpisodeRunner:
 
         if test_mode and (len(self.test_returns) == self.args.test_nepisode):
             self._log(cur_returns, cur_stats, log_prefix)
+            
         elif self.t_env - self.log_train_stats_t >= self.args.runner_log_interval:
             self._log(cur_returns, cur_stats, log_prefix)
             if hasattr(self.mac.action_selector, "epsilon"):

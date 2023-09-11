@@ -39,9 +39,10 @@ def run(_run, config, _log):
         map_name = _config["env_args"]["map_name"]
     except:
         map_name = _config["env_args"]["key"]   
-    unique_token = get_unique_dirname(_config['name'], map_name)
-
-    args.unique_token = unique_token
+    # unique_token = get_unique_dirname(_config['name'], map_name)
+    unique_token = os.path.join(map_name, config["unique_token"])
+    unique_token = os.path.join(unique_token, str(_run._id))
+    args.unique_token = unique_token 
     if args.use_tensorboard:
         tb_logs_direc = os.path.join(
             dirname(dirname(abspath(__file__))), "results", "tb_logs"
@@ -160,7 +161,11 @@ def run_sequential(args, logger):
 
         logger.console_logger.info("Loading model from {}".format(model_path))
         learner.load_models(model_path)
-        runner.t_env = timestep_to_load
+
+        if args.restart_from_pretrained:
+            runner.t_env = 0
+        else:
+            runner.t_env = timestep_to_load
 
         if args.evaluate or args.save_replay:
             runner.log_train_stats_t = runner.t_env

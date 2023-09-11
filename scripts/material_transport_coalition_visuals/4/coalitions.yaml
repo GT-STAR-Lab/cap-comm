@@ -1,0 +1,258 @@
+train:
+  coalitions:
+    4_agents:
+      0:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 9
+          id: 1
+          lumber_cap: 1
+        2:
+          concrete_cap: 8
+          id: 2
+          lumber_cap: 2
+        3:
+          concrete_cap: 7
+          id: 3
+          lumber_cap: 3
+      1:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 8
+          id: 1
+          lumber_cap: 2
+        2:
+          concrete_cap: 7
+          id: 2
+          lumber_cap: 3
+        3:
+          concrete_cap: 5
+          id: 3
+          lumber_cap: 5
+      2:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 7
+          id: 1
+          lumber_cap: 3
+        2:
+          concrete_cap: 10
+          id: 2
+          lumber_cap: 0
+        3:
+          concrete_cap: 0
+          id: 3
+          lumber_cap: 10
+      3:
+        0:
+          concrete_cap: 10
+          id: 0
+          lumber_cap: 0
+        1:
+          concrete_cap: 10
+          id: 1
+          lumber_cap: 0
+        2:
+          concrete_cap: 7
+          id: 2
+          lumber_cap: 3
+        3:
+          concrete_cap: 4
+          id: 3
+          lumber_cap: 6
+      4:
+        0:
+          concrete_cap: 10
+          id: 0
+          lumber_cap: 0
+        1:
+          concrete_cap: 7
+          id: 1
+          lumber_cap: 3
+        2:
+          concrete_cap: 5
+          id: 2
+          lumber_cap: 5
+        3:
+          concrete_cap: 3
+          id: 3
+          lumber_cap: 7
+      5:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 7
+          id: 1
+          lumber_cap: 3
+        2:
+          concrete_cap: 0
+          id: 2
+          lumber_cap: 10
+        3:
+          concrete_cap: 2
+          id: 3
+          lumber_cap: 8
+      6:
+        0:
+          concrete_cap: 8
+          id: 0
+          lumber_cap: 2
+        1:
+          concrete_cap: 3
+          id: 1
+          lumber_cap: 7
+        2:
+          concrete_cap: 4
+          id: 2
+          lumber_cap: 6
+        3:
+          concrete_cap: 7
+          id: 3
+          lumber_cap: 3
+      7:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 6
+          id: 1
+          lumber_cap: 4
+        2:
+          concrete_cap: 4
+          id: 2
+          lumber_cap: 6
+        3:
+          concrete_cap: 0
+          id: 3
+          lumber_cap: 10
+      8:
+        0:
+          concrete_cap: 9
+          id: 0
+          lumber_cap: 1
+        1:
+          concrete_cap: 6
+          id: 1
+          lumber_cap: 4
+        2:
+          concrete_cap: 3
+          id: 2
+          lumber_cap: 7
+        3:
+          concrete_cap: 0
+          id: 3
+          lumber_cap: 10
+      9:
+        0:
+          concrete_cap: 10
+          id: 0
+          lumber_cap: 0
+        1:
+          concrete_cap: 0
+          id: 1
+          lumber_cap: 10
+        2:
+          concrete_cap: 1
+          id: 2
+          lumber_cap: 9
+        3:
+          concrete_cap: 3
+          id: 3
+          lumber_cap: 7
+      10:
+        0:
+          concrete_cap: 7
+          id: 0
+          lumber_cap: 3
+        1:
+          concrete_cap: 5
+          id: 1
+          lumber_cap: 5
+        2:
+          concrete_cap: 5
+          id: 2
+          lumber_cap: 5
+        3:
+          concrete_cap: 3
+          id: 3
+          lumber_cap: 7
+      11:
+        0:
+          concrete_cap: 6
+          id: 0
+          lumber_cap: 4
+        1:
+          concrete_cap: 3
+          id: 1
+          lumber_cap: 7
+        2:
+          concrete_cap: 7
+          id: 2
+          lumber_cap: 3
+        3:
+          concrete_cap: 0
+          id: 3
+          lumber_cap: 10
+      12:
+        0:
+          concrete_cap: 7
+          id: 0
+          lumber_cap: 3
+        1:
+          concrete_cap: 4
+          id: 1
+          lumber_cap: 6
+        2:
+          concrete_cap: 3
+          id: 2
+          lumber_cap: 7
+        3:
+          concrete_cap: 0
+          id: 3
+          lumber_cap: 10
+      13:
+        0:
+          concrete_cap: 7
+          id: 0
+          lumber_cap: 3
+        1:
+          concrete_cap: 0
+          id: 1
+          lumber_cap: 10
+        2:
+          concrete_cap: 1
+          id: 2
+          lumber_cap: 9
+        3:
+          concrete_cap: 1
+          id: 3
+          lumber_cap: 9
+      14:
+        0:
+          concrete_cap: 2
+          id: 0
+          lumber_cap: 8
+        1:
+          concrete_cap: 0
+          id: 1
+          lumber_cap: 10
+        2:
+          concrete_cap: 1
+          id: 2
+          lumber_cap: 9
+        3:
+          concrete_cap: 1
+          id: 3
+          lumber_cap: 9

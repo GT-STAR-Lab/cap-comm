@@ -1,20 +1,18 @@
 exclude: null
 grid-search:
 
-  "--config":
-    - "iql"
-    - "iql_ns"
-
   lr:
-    - 0.0001
-    - 0.0003
     - 0.0005
+    - 0.00005
 
   standardise_rewards:
     - True
+    - False
 
   use_rnn:
     - False
+  agent:
+    - "gnn"
 
   target_update_interval_or_tau:
     - 200
@@ -22,18 +20,15 @@ grid-search:
 
   hidden_dim:
     - 64
-    - 128
 
-  evaluation_epsilon:
-    - 0.0
-    - 0.05
+  entropy_coef:
+    - 0.01
+    - 0.001
 
-  epsilon_anneal_time:
-    - 50000
-    - 200000
-
+  q_nstep:
+    - 5
   t_max:
-    - 2050000
+    - 4000000
   test_nepisode:
     - 100
   test_interval:
@@ -43,10 +38,11 @@ grid-search:
   save_model_interval:
     - 50000
   save_model:
-    - false
+    - true
     
 grid-search-groups:
   env0:
-    - "--env-config": "gymma"
-    - env_args.key: lbforaging:Foraging-8x8-2p-3f-v0
-    - env_args.time_limit: 25
+    - env_args.key: robotarium_gym:PredatorCapturePreyGNN-v0
+    - env_args.time_limit: 1000
+    - alg_yaml: "mappo_gnn"
+    - env_yaml: "gymma"

@@ -17,6 +17,7 @@ import yaml
 from yaml import Loader
 import time
 from run import run
+import argparse
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
 logger = get_logger()
@@ -119,8 +120,8 @@ def config():
     ex.add_config(get_config_filepath(alg_yaml, "algs"))
 
     # Inject map_name into env_args
-    map_name = "mpe:SimpleSpeakerListener-v0"
-    ex.add_config({"env_args": {"key": map_name}})
+    # map_name = "mpe:SimpleSpeakerListener-v0"
+    # ex.add_config({"env_args": {"key": map_name}})
 
 @ex.main
 def main(_run, _config, _log, seed):
@@ -176,11 +177,22 @@ def main(_run, _config, _log, seed):
 
 if __name__ == '__main__':
     
+    print(sys.argv)
+    no_save_sacred = False
+    for arg in sys.argv:
+        if("env_args.key" in arg):
+            map_name = arg.split(":")[-1]
+        if("no-save-sacred" in arg):
+            no_save_sacred = True
     results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
     unique_token = f"{datetime.datetime.now().strftime('%Y-%m-%d:%I-%M-%S-%p')}"
-    logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
-    file_obs_path = os.path.join(results_path, f"sacred/{unique_token}")
-    ex.observers.append(FileStorageObserver.create(file_obs_path))
+    ex.add_config(unique_token=unique_token)
+    
+    # sys.argv.append(f"-i {unique_token}") # set the id of the experiment to be the time it was ran. This matches with tensorboard
+    
+    # logger.info(f"Saving to FileStorageObserver in results/sacred/{unique_token}.")
+    if(not no_save_sacred):
+        ex.observers.append(FileStorageObserver(os.path.join(results_path, "sacred_runs", map_name))) # save experiments based on the environment
     
     # main()
     ex.run_commandline()
