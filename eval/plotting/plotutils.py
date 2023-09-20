@@ -39,9 +39,14 @@ def outtro(kwargs):
             else:
                 plt.ylabel(value)
         if(key=="xlabel"):
-            plt.xlabel(value)
-        if(key=="xlabel_fontsize"):
+            if("xlabel_fontsize" in kwargs.keys()):
+                plt.xlabel(value, fontsize=kwargs["xlabel_fontsize"])
+            else:
+                plt.xlabel(value)
+        if(key=="xtick_fontsize"):
             ax.set_xticklabels(ax.get_xticklabels(), fontsize=value)
+        if(key=="ytick_fontsize"):
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=value)
         if(key=="ylim"):
             plt.ylim(value)
         if(key=="xlim"):
@@ -75,6 +80,10 @@ def boxplot_v0(data, x="models", y=None, order=None, **kwargs):
                 whiskerprops={'color': 'gray'},
                 capprops={'color':'gray'})
     # sns.stripplot(data=data, ax=ax, jitter=0.2, color='black', x=x, y=y, alpha=0.01)
+    kwargs["xtick_fontsize"] = 35.00
+    kwargs["ytick_fontsize"] = 35.0
+    kwargs["xlabel_fontsize"] = 38.00
+    kwargs["ylabel_fontsize"] = 38.00
     outtro(kwargs)
     return(fig, ax)
 
@@ -146,8 +155,16 @@ def plot_percentage_of_quota_remiaining(data, which_quota="lumber", order=None, 
     plt.axhline(y=0.0, color='gray', linestyle='dotted')
     # ax.set_yticklabels(["%d" % (int(-1*float(x)) if x != 0 else x) for x in ax.get_yticks()])
 
+    kwargs["xtick_fontsize"] = 35.00
+    kwargs["ytick_fontsize"] = 35.0
+    kwargs["xlabel_fontsize"] = 38.00
+    kwargs["ylabel_fontsize"] = 38.00
+
     outtro(kwargs)
     ax.set_yticklabels(["%d" % (int(-1*float(x)) if x != 0 else x) for x in ax.get_yticks()])
+    if("save_path" in kwargs.keys()):
+        value = kwargs["save_path"]
+        plt.savefig(os.path.join(value, kwargs["fig_name"]), dpi=300, bbox_inches="tight")
     return(fig, ax)
 
 def plot_total_quota_filled(data, order=None, **kwargs):
@@ -167,6 +184,12 @@ def plot_total_quota_filled(data, order=None, **kwargs):
     
     sns.lineplot(data=df_exploded, ax=ax, x="time_step", y=f"total_quota_filled_per_step", hue="models", hue_order=order, linewidth=4)
     ax.set_yticklabels(["%d" % (int(100*float(x))) for x in ax.get_yticks()])
+
+    kwargs["xtick_fontsize"] = 35.00
+    kwargs["ytick_fontsize"] = 35.0
+    kwargs["xlabel_fontsize"] = 38.00
+    kwargs["ylabel_fontsize"] = 38.00
+
     outtro(kwargs)
     return(fig, ax)
 
