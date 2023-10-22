@@ -23,13 +23,6 @@ _particles = {
     "simple_tag": "SimpleTag-v0",
     "simple_world_comm": "SimpleWorldComm-v0",
     "climbing_spread": "ClimbingSpread-v0",
-    "terrain_aware_navigation": "TerrainAwareNavigation-v0",
-    "heterogeneous_sensor_network": "HeterogeneousSensorNetwork-v0",
-    "heterogeneous_material_transport": "HeterogeneousMaterialTransport-v0",
-    "terrain_aware_navigation_ca": "TerrainAwareNavigationCA-v0",
-    # "heterogeneous_sensor_network_ca": "HeterogeneousSensorNetworkCA-v0",
-    # "heterogeneous_material_transport_ca": "HeterogeneousMaterialTransportCA-v0",
-    "terrain_dependant_navigation": "TerrainDependantNavigation-v0",
     "search_and_capture": "SearchAndCapture-v0",
     "material_transport": "MaterialTransport-v0"
 }

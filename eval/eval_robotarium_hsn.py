@@ -19,12 +19,14 @@ import pandas as pd
 import argparse
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Argument Parser Example')
 
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parser = argparse.ArgumentParser(description='Argument Parser Example')
+    environment_eval_dir = os.path.join(current_dir, "eval_experiments_and_configs", "robotarium_gym:HeterogeneousSensorNetwork-v0")
     parser.add_argument('--environment', type=str, help='Environment argument', default="robotarium_gym:HeterogeneousSensorNetwork-v0")
-    parser.add_argument('--experiment_path', type=str, help='Experiment path argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl")
-    parser.add_argument('--env_config_dir', type=str, help='Env config directory argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_env_configs")
-    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default="/home/dwalkerhowell3/star_lab/experiments_ca-gnn-marl/eval_saves_v2")
+    parser.add_argument('--experiment_path', type=str, help='Experiment path argument', default=os.path.join(environment_eval_dir, "experiments"))
+    parser.add_argument('--env_config_dir', type=str, help='Env config directory argument', default=os.path.join(environment_eval_dir, "eval_configs"))
+    parser.add_argument('--save_eval_result_dir', type=str, help='Save evaluation result directory argument', default=os.path.join(environment_eval_dir, "eval_outputs"))
     parser.add_argument('--env_config_filename', type=str, help='Env config filename argument')
     parser.add_argument('--sacred_run', type=str, help='Sacred run argument')
     parser.add_argument('--experiment_name', type=str, help='Experiment name argument')
