@@ -1,0 +1,68 @@
+#Arguments needed by main.py
+scenario: HeterogeneousSensorNetwork #name of the folder inside scenarios
+
+model_config_file: dc_3_agents_hsn_config.json
+model_file: dc_3_agents_hsn_agent_3.th
+
+actor_file: gnn_agent
+actor_class: DualChannelGNNAgent
+
+env_file: HeterogeneousSensorNetwork
+env_class: HeterogeneousSensorNetwork #This needs to have all of the functionalities of a gym to work
+n_actions: 5 #The number of actions available for the agent
+n_agents: 3
+episodes: 1000 #Number of episodes to run for
+shared_reward: True
+
+#Arguments needed by the environment
+show_figure_frequency: -1 #Set to -1 to turn off figures. Needs to be 1 when submitting to Robotarium
+robotarium: False #Should be False during training to speed up robots, needs to be true when submitting
+real_time: False
+seed: 54569
+barrier_certificate: "default" #Can be safe or default for strong or weak barrier certificates
+penalize_violations: True # violation=robot collision w/ each other or boundary, does not terminate early
+end_ep_on_violation: True
+violation_penalty: -1.0
+delta: -1 #Used to determine the adjacency matrix, set to -1 for full communication
+max_episode_steps: 80
+terminate_on_success: True # If true, then when the number of prey is zero, the environment will terminate. Else environment keeps running.
+update_frequency: 29
+step_dist : 0.2 #This should probably be renamed. This is actually the amount of distance the robots move per time step...
+start_dist: 0.3 #Minimum distance the agents start from each other
+
+#The follow four arguments are the boundaries in the Robotarium that the robots are allowed to traverse to
+LEFT: -1.4
+RIGHT: 1.4
+UP: -0.9
+DOWN: .9
+dist_reward_multiplier: 1.0
+test: False #Set this to change the agents that are being selected from
+#If the following two are False, make sure resample is also False
+capability_aware: True #Either the agent know what class they're in or their capabilities. Make sure this matches training
+agent_id: False #If capability_aware is False, this determines if the class id is appended instead or not
+dual_channel: False #KEEP FALSE, NOT USED. Changes the observations to make them a 2d array for capabilities and observations if capability_aware is true
+
+#Information needed to generate the predefined agents and coalitions
+n_train_agents: 20
+n_test_agents: 20
+n_coalitions: 5
+coalition_file: "custom_5_coalitions_4_robots.yaml"
+
+traits:
+  radius:
+    distribution: 'uniform'
+    low: 0.20
+    high: 0.60
+
+### For experiment 2, turn load_from_predefined_coalitions to false
+load_from_predefined_coalitions: False # Load coalitions from 'predefined_coalition.yaml'. If False, then loads new agents based on traits distribution.
+load_from_predefined_agents: False # Uses the predefined agents from the predefined_coalition file, but samples new coalitions from these agents.
+manual_coalition_selection: False # IF true, the only sample the coalition coalition_selection from the colaition file for "n_agents"
+coalition_selection: 0
+shuffle_agent_order: False # this will shuffle the order of agents when coalition is sampled
+resample: True #Set to true to resample the agents every episode
+resample_frequency: 5
+calculate_total_overlap: True
+
+#KEEP FALSE
+hard_coded_coalition: False

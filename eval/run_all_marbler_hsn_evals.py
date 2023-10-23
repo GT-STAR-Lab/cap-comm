@@ -62,7 +62,7 @@ if __name__ == "__main__":
     python_eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval_robotarium_hsn.py")
 
     subprocesses = [] # list to hold the subprocesses
-    max_subprocesses = 16
+    max_subprocesses = 4
     current_number_of_suprocesses = 0
     total_ran = 0
     # begin evaluations
