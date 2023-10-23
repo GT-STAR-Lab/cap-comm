@@ -11,3 +11,4 @@ launch.json
 eval/eval_experiments_and_configs/robotarium_gym:HeterogeneousSensorNetwork-v0/experiments
 eval/eval_experiments_and_configs/mpe:MaterialTransport-v0/experiments
 __pycache__/
+pretrained_models/
