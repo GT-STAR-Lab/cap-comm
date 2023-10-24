@@ -1,14 +1,29 @@
-# Extended Python MARL framework - EPyMARL
+# CAP-COMM
+This codebase was used for the expeirments in [Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities](https://openreview.net/forum?id=N3VbFUpwaa&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3Drobot-learning.org%2FCoRL%2F2023%2FConference%2FAuthors%23your-submissions))
+
+*Pierce Howell, Max Rudolph, Reza Torbati, Kevin Fu, & Harish Ravichandar. Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities, 7th Annual Conference on Robot Learning (CoRL), 2023*
+
+In BibTex format:
+```tex
+@inproceedings{
+  howell2023generalization,
+  title={Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities},
+  author={Pierce Howell and Max Rudolph and Reza Joseph Torbati and Kevin Fu and Harish Ravichandar},
+  booktitle={7th Annual Conference on Robot Learning},
+  year={2023},
+  url={https://openreview.net/forum?id=N3VbFUpwaa}
+}
+```
 
 
 # Table of Contents
+- [CAP-COMM Citation](#cap-comm)
 - [Table of Contents](#table-of-contents)
-- [Installation & Run instructions](#installation--run-instructions)
-
-- [Citing PyMARL and EPyMARL](#citing-pymarl-and-epymarl)
+- [Installation Instructions](#installation-instructions)
+- [Citing MARBLER and EPyMARL](#citing-marbler-and-epymarl)
 - [License](#license)
 
-# Installation & Run instructions
+# Installation Instructions
 ## Download the Repository
 ```bash
 git clone ....
@@ -67,80 +82,42 @@ cp -r "mpe:MaterialTransport-v0/experiments/*" "../eval/eval_experiments_and_con
 cp -r "robotarium_gym:HeterogeneousSensorNetwork-v0/*" "../eval/eval_experiments_and_configs/robotarium_gym:HeterogeneousSensorNetwork-v0/experiments/"
 ```
 
+# Evaluations
+The evaluations can be reproduced using the installed pretrained models. The evaluation process is comprised of two stages: i) data collection and ii) reporting. During data collection,
+the trained models are deployed on the target environment and evaluation metrics are recorded. For reporting, the collected data is plotted and the corresponding plots are saved as figures.  
 
-For MPE, our fork is needed. Essentially all it does (other than fixing some gym compatibility issues) is i) registering the environments with the gym interface when imported as a package and ii) correctly seeding the environments iii) makes the action space compatible with Gym (I think MPE originally does a weird one-hot encoding of the actions).
-
-The environments names in MPE are:
+## Heterogeneous Matieral Transport Environment (HMT)
+Data Collection
+```bash
+cd [REPO_PATH]/cap-comm/eval
+python run_all_mpe_material_transport_evals.py 
 ```
-...
-    "multi_speaker_listener": "MultiSpeakerListener-v0",
-    "simple_adversary": "SimpleAdversary-v0",
-    "simple_crypto": "SimpleCrypto-v0",
-    "simple_push": "SimplePush-v0",
-    "simple_reference": "SimpleReference-v0",
-    "simple_speaker_listener": "SimpleSpeakerListener-v0",
-    "simple_spread": "SimpleSpread-v0",
-    "simple_tag": "SimpleTag-v0",
-    "simple_world_comm": "SimpleWorldComm-v0",
-...
-```
-Therefore, after installing them you can run it using:
-```sh
-python3 src/main.py --config=qmix --env-config=gymma with env_args.time_limit=25 env_args.key="mpe:SimpleSpeakerListener-v0"
-```
-
-The pretrained agents are included in this repo [here](https://github.com/uoe-agents/epymarl/tree/main/src/pretrained). You can use them with:
-```sh
-python3 src/main.py --config=qmix --env-config=gymma with env_args.time_limit=25 env_args.key="mpe:SimpleAdversary-v0" env_args.pretrained_wrapper="PretrainedAdversary"
-```
-and
-```sh
-python3 src/main.py --config=qmix --env-config=gymma with env_args.time_limit=25 env_args.key="mpe:SimpleTag-v0" env_args.pretrained_wrapper="PretrainedTag"
-```
+The data collection script will load models (at each seed) from the `eval/eval_experiments_and_configs/[ENVIRONMENT_NAME]/experiments` directory and the evaluation configuration from `eval/eval_experiments_and_configs[ENVIRONMENT_NAME]/eval_configs`. All the models will be ran for each config. Please see the scripts `eval/eval_mpe_material_transport.py` and `eval/run_all_mpe_material_transport_evals.py` for more detaisl on how the evaluations are performed.
 
 
-# Run an experiment on a Gym environment
+## Heterogeneous Sensor Network Environment (HSN)
 
-```shell
-python3 src/main.py --config=qmix --env-config=gymma with env_args.time_limit=50 env_args.key="lbforaging:Foraging-8x8-2p-3f-v1"
-```
- In the above command `--env-config=gymma` (in constrast to `sc2` will use a Gym compatible wrapper). `env_args.time_limit=50` sets the maximum episode length to 50 and `env_args.key="..."` provides the Gym's environment ID. In the ID, the `lbforaging:` part is the module name (i.e. `import lbforaging` will run automatically).
+# Training New Models
 
+## Heterogeneous Matieral Transport Environment (HMT)
 
-The config files act as defaults for an algorithm or environment. 
-
-They are all located in `src/config`.
-`--config` refers to the config files in `src/config/algs`
-`--env-config` refers to the config files in `src/config/envs`
-
-All results will be stored in the `Results` folder.
+## Heterogeneous Sensor Network Environment (HSN)
 
 
-# Saving and loading learnt models
 
-## Saving models
+# Citing MARBLER and EPyMarl
+The experiments relied on the [MARBLER-CA](https://github.com/GT-STAR-Lab/MARBLER-CA) codebase, which is a fork of the [original MARBLER](https://github.com/GT-STAR-Lab/MARBLER) repository. This fork introduced the heterogeneous sensor network environment with capability aware robots. The MARBLER framework is presented in [MARBLER: An Open Platform for Standardized Evaluation of Multi-Robot Reinforcement Learning Algorithms](https://arxiv.org/abs/2307.03891).
 
-You can save the learnt models to disk by setting `save_model = True`, which is set to `False` by default. The frequency of saving models can be adjusted using `save_model_interval` configuration. Models will be saved in the result directory, under the folder called *models*. The directory corresponding each run will contain models saved throughout the experiment, each within a folder corresponding to the number of timesteps passed since starting the learning process.
+*Reza Torbati, Shubham Lohiya, Shivika Singh, Meher Shashwat Nigam, Harish Ravichandar. MARBLER: An Open Platform for Standardized Evaluation of Multi-Robot Reinforcement Learning Algorithms, 2023*
 
-## Loading models
-
-Learnt models can be loaded using the `checkpoint_path` parameter, after which the learning will proceed from the corresponding timestep. 
-
-# Citing CAP-COMM, EPyMARL and PyMARL
-
-This codebase was used for the expeirments in [Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities](https://openreview.net/forum?id=N3VbFUpwaa&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3Drobot-learning.org%2FCoRL%2F2023%2FConference%2FAuthors%23your-submissions))
-
-*Pierce Howell, Max Rudolph, Reza Torbati, Kevin Fu, & Harish Ravichandar. Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities, 7th Annual Conference on Robot Learning (CoRL), 2023*
-
-In BibTex format:
 ```tex
-@inproceedings{
-  howell2023generalization,
-  title={Generalization of Heterogeneous Multi-Robot Policies via Awareness and Communication of Capabilities},
-  author={Pierce Howell and Max Rudolph and Reza Joseph Torbati and Kevin Fu and Harish Ravichandar},
-  booktitle={7th Annual Conference on Robot Learning},
-  year={2023},
-  url={https://openreview.net/forum?id=N3VbFUpwaa}
+@misc{torbati2023marbler,
+      title={MARBLER: An Open Platform for Standarized Evaluation of Multi-Robot Reinforcement Learning Algorithms}, 
+      author={Reza Torbati and Shubham Lohiya and Shivika Singh and Meher Shashwat Nigam and Harish Ravichandar},
+      year={2023},
+      eprint={2307.03891},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO}
 }
 ```
 
