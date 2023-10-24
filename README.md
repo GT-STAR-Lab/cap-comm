@@ -9,15 +9,21 @@
 - [License](#license)
 
 # Installation & Run instructions
+## Download the Repository
+```bash
+git clone ....
+cd ...
+git submodule init # Initialize the MARBLER submodule
+```
+
 
 ## Python Environment
-
 ### Anaconda
 
 Create the anaconda environment for python 3.8
-```
-conda create -n ca-gnn-marl python=3.8 pip
-conda activate ca-gnn-marl
+```bash
+conda create -n cap-comm python=3.8 pip
+conda activate cap-comm
 ```
 
 Install pytorch for the specifications of your system. See [Pytorch installation instructions](https://pytorch.org/).
@@ -34,6 +40,7 @@ pip install -e .
 ```
 
 ## MARBLER
+To install the depedencies, followed the installation instructions in the MARBLER [README]()
 
 
 ## Download Pre-trained Models
@@ -41,9 +48,11 @@ pip install -e .
 Download and extract the models used for the results in [paper](https://openreview.net/forum?id=N3VbFUpwaa&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3Drobot-learning.org%2FCoRL%2F2023%2FConference%2FAuthors%23your-submissions)) 
 
 ```bash
-cd [repo_path]/ca-gnn-marl/
+cd [repo_path]/cap-comm/
 mkdir pretrained_models && cd pretrained_models
+
 wget -O mpe-MaterialTransport-v0.zip https://www.dropbox.com/scl/fi/7q9yxveugls2udligm453/mpe-MaterialTransport-v0.zip?rlkey=6xfl9s3wyiyw58meu92w5yylh&dl=0
+
 wget -O "robotarium_gym-HeterogeneousSensorNetwork.zip" https://www.dropbox.com/scl/fi/eosst3qs2artsfo1sxlwx/robotarium_gym-HeterogeneousSensorNetwork-v0.zip?rlkey=fsok69570xir1c49sccqfetm6&dl=0
 
 unzip mpe-MaterialTransport-v0.zip
