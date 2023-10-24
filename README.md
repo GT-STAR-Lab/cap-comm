@@ -55,7 +55,7 @@ pip install -e .
 ```
 
 ## MARBLER
-To install the depedencies, followed the installation instructions in the MARBLER [README]()
+To install the depedencies, followed the installation instructions in the MARBLER repo [README](https://github.com/GT-STAR-Lab/MARBLER).
 
 
 ## Download Pre-trained Models
