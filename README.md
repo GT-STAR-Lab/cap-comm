@@ -92,7 +92,7 @@ Data Collection
 cd [REPO_PATH]/cap-comm/eval
 python run_all_mpe_material_transport_evals.py 
 ```
-The data collection script will load models (at each seed) from the `eval/eval_experiments_and_configs/[ENVIRONMENT_NAME]/experiments` directory and the evaluation configuration from `eval/eval_experiments_and_configs[ENVIRONMENT_NAME]/eval_configs`. All the models will be ran for each config. Please see the scripts `eval/eval_mpe_material_transport.py` and `eval/run_all_mpe_material_transport_evals.py` for more detaisl on how the evaluations are performed.
+The data collection script will load models (at each seed) from the `eval/eval_experiments_and_configs/[ENVIRONMENT_NAME]/experiments` directory and the evaluation configuration from `eval/eval_experiments_and_configs[ENVIRONMENT_NAME]/eval_configs`. All the models will be ran for each config. Please see the scripts `eval/eval_mpe_material_transport.py` and `eval/run_all_mpe_material_transport_evals.py` for more details on how the evaluations are performed.
 
 
 ## Heterogeneous Sensor Network Environment (HSN)
