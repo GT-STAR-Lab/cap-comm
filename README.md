@@ -112,7 +112,7 @@ The experiments relied on the [MARBLER-CA](https://github.com/GT-STAR-Lab/MARBLE
 
 ```tex
 @misc{torbati2023marbler,
-      title={MARBLER: An Open Platform for Standarized Evaluation of Multi-Robot Reinforcement Learning Algorithms}, 
+      title={MARBLER: An Open Platform for Standardized Evaluation of Multi-Robot Reinforcement Learning Algorithms}, 
       author={Reza Torbati and Shubham Lohiya and Shivika Singh and Meher Shashwat Nigam and Harish Ravichandar},
       year={2023},
       eprint={2307.03891},
