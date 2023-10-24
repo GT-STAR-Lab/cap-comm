@@ -170,18 +170,36 @@ def plot_total_quota_filled(data, order=None, **kwargs):
     outtro(kwargs)
     return(fig, ax)
 
-def plot_training_curves(data, scaling_factor=1.0, hue_order=None, **kwargs):
+def plot_training_curves(data, scaling_factor=1.0, hue_order=None, fill_steps=True, **kwargs):
     fig, ax = preamble()
     set_color_by_order(hue_order)
+    from scipy.interpolate import interp1d
 
+    steps = set(list(data["steps"])) # all steps data was taken
     def smooth_data(group, smoothing_factor):
+        
+        if(fill_steps):
+            steps2 = set(list(group['steps']))
+            values = list(group['values'])
+
+            f = interp1d(list(steps2), values, kind='previous', fill_value='extrapolate')
+            new_steps = list(steps - steps2)
+
+            new_data = {'steps': new_steps, 'values': f(new_steps), 'model': [group['model'].iloc[0]] * len(new_steps),
+                        'seed': [group['seed'].iloc[0]] * len(new_steps)}
+        
+            group = pd.concat([group, pd.DataFrame(new_data)])
+            group = group.sort_values(by='steps', ascending=True)
+
+            group.reset_index(drop=True, inplace=True)
+
         group['smoothed_y'] = group["values"].ewm(alpha=smoothing_factor).mean()
         return group
 
     # smooth each model with each seed
-    # smoothed_data = data.groupby(['model', 'seed']).apply(lambda x: smooth_data(x, scaling_factor))
-    smoothed_data = data.groupby('model').apply(lambda x : x.groupby('seed').apply(lambda x: smooth_data(x, scaling_factor)))
-    print(len(data.groupby('model')), len(data.groupby(['model', 'seed'])))
+    smoothed_data = data.groupby(['model', 'seed']).apply(lambda x: smooth_data(x, scaling_factor))
+    # smoothed_data = data.groupby('model').apply(lambda x : x.groupby('seed').apply(lambda x: smooth_data(x, scaling_factor)))
+    # print(len(data.groupby('model')), len(data.groupby(['model', 'seed'])))
     sns.lineplot(data=smoothed_data, x="steps", y="smoothed_y", 
                  errorbar='sd', hue="model", hue_order=hue_order, linewidth=4)
 
