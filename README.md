@@ -84,7 +84,7 @@ cp -r "robotarium_gym:HeterogeneousSensorNetwork-v0/*" "../eval/eval_experiments
 
 # Evaluations
 The evaluations can be reproduced using the installed pretrained models. The evaluation process is comprised of two stages: i) data collection and ii) reporting. During data collection,
-the trained models are deployed on the target environment and evaluation metrics are recorded. For reporting, the collected data is plotted and the corresponding plots are saved as figures.  
+the trained models are deployed on the target environment and evaluation metrics are recorded. The data collection script will load models (at each seed) from the `eval/eval_experiments_and_configs/[ENVIRONMENT_NAME]/experiments` directory and the evaluation configuration from `eval/eval_experiments_and_configs[ENVIRONMENT_NAME]/eval_configs`. For reporting, the collected data is plotted and the corresponding plots are saved as figures in the directory `eval/eval_experiments_and_configs/mpe:MaterialTransport-v0/eval_figures`.
 
 ## Heterogeneous Matieral Transport Environment (HMT)
 Data Collection
@@ -92,18 +92,46 @@ Data Collection
 cd [REPO_PATH]/cap-comm/eval
 python run_all_mpe_material_transport_evals.py 
 ```
-The data collection script will load models (at each seed) from the `eval/eval_experiments_and_configs/[ENVIRONMENT_NAME]/experiments` directory and the evaluation configuration from `eval/eval_experiments_and_configs[ENVIRONMENT_NAME]/eval_configs`. All the models will be ran for each config. Please see the scripts `eval/eval_mpe_material_transport.py` and `eval/run_all_mpe_material_transport_evals.py` for more details on how the evaluations are performed.
+All the models will be ran for each config. Please see the scripts `eval/eval_mpe_material_transport.py` and `eval/run_all_mpe_material_transport_evals.py` for more details on how the evaluations are performed. Note, `eval/run_all_mpe_material_transport_evals.py` handles running `eval/eval_mpe_material_transport.py` using multi-processing for faster evaluation.
+
+
+Reporting
+```bash
+cd [REPO_PATH]/cap-comm/eval
+
+# begin the jupyter notebook
+jupyter notebook
+```
+Open jupyter notebook in a local browser, then open the file `mpe_material_transport_evaluation_reporting.ipynb`. Go ahead and run all the cells to produced the evaluation figures. The figures will be saved in the directory `eval/eval_experiments_and_configs/mpe:MaterialTransport-v0/eval_figures`.
 
 
 ## Heterogeneous Sensor Network Environment (HSN)
+Data Collection
+```bash
+cd [REPO_PATH]/cap-comm/eval
+python run_all_marbler_hsn_evals.py
+```
+
+Reporting
+```bash
+cd [REPO_PATH]/cap-comm/eval
+
+# begin the jupyter notebook
+jupyter notebook
+```
+Within the jupyter notebook file directory, open the file `marbler_hsn_evaluation_reporting.ipynb`. Run all the cells to produce the evaluation figures. The figures will be saved in the directory `eval/eval_experiments_and_configs/robotarium_gym:HeterogeneousSensorNetwork-v0/eval_figures`.
+
 
 # Training New Models
+The models are trained using the [EPyMarl](https://github.com/uoe-agents/epymarl) training framework. This section demonstrates the commands that were run to generate the policies used in the paper.
 
 ## Heterogeneous Matieral Transport Environment (HMT)
+Before executing training, it is important to verify that the configuration of the environment is correct. At this time, command line arguments DO NOT override the environment specific configuration in `mpe/mpe/scenarios/configs/material_transport`. These must be configured in the `mpe/mpe/scenarios/configs/material_transport/base_config.yaml`.
+
+TODO: Finish this section!
+
 
 ## Heterogeneous Sensor Network Environment (HSN)
-
-
 
 # Citing MARBLER and EPyMarl
 The experiments relied on the [MARBLER-CA](https://github.com/GT-STAR-Lab/MARBLER-CA) codebase, which is a fork of the [original MARBLER](https://github.com/GT-STAR-Lab/MARBLER) repository. This fork introduced the heterogeneous sensor network environment with capability aware robots. The MARBLER framework is presented in [MARBLER: An Open Platform for Standardized Evaluation of Multi-Robot Reinforcement Learning Algorithms](https://arxiv.org/abs/2307.03891).
