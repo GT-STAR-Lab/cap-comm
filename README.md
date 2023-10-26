@@ -55,7 +55,7 @@ pip install -e .
 ```
 
 ## MARBLER
-To install the depedencies, followed the installation instructions in the MARBLER repo [README](https://github.com/GT-STAR-Lab/MARBLER).
+To install the dependencies, follow the installation instructions in the MARBLER repo [README](https://github.com/GT-STAR-Lab/MARBLER).
 
 
 ## Download Pre-trained Models
@@ -125,11 +125,38 @@ Within the jupyter notebook file directory, open the file `marbler_hsn_evaluatio
 # Training New Models
 The models are trained using the [EPyMarl](https://github.com/uoe-agents/epymarl) training framework. This section demonstrates the commands that were run to generate the policies used in the paper.
 
-## Heterogeneous Matieral Transport Environment (HMT)
-Before executing training, it is important to verify that the configuration of the environment is correct. At this time, command line arguments DO NOT override the environment specific configuration in `mpe/mpe/scenarios/configs/material_transport`. These must be configured in the `mpe/mpe/scenarios/configs/material_transport/base_config.yaml`.
+## Heterogeneous Material Transport Environment (HMT)
+Before executing training, it is important to verify that the configuration of the environment is correct. At this time, command line arguments DO NOT override the environment-specific configurations. These must be configured in the `mpe/mpe/scenarios/configs/material_transport/base_config.yaml`. The main configuration parameters to change (depending on the experiment) are the following:
+- `n_agents`: Choose the number of agents for training. Typically kept at 4 agents.
+- `capability_aware / agent_id`: Set with a boolean of `True` or `False` depending if the experiment requires capability aware agents or ID-based agents
+- `load_from_predefined_agents`: If set to `True`, then use the predefined agents from the predefined_coalition file. If `False`, then agents with new capabilities are sampled from a distribution (see `traits` in the config file).
+
+The commands for the experiments are provided in the `/scripts/mpe:MaterialTransport-v0` directory:
+```bash
+# Run the GNN with capability awareness (i.e. CA+CC (GNN))
+# set capability_aware = True and agent_id = False
+bash run_GNN_CA_4_agents_MT.sh
+
+# Run the GNN with no communication of capabilities, but the agent's action network is conditioned on capabilities (i.e. CA (GNN))
+# set capability_aware = True and agent_id = False
+bash run_GNN_CA_SKIP_4_agents_MT.sh
+
+# Run the GNN with agent ID (i.e. ID (GNN))
+# set capability_aware = False and agent_id = True
+bash run_GNN_ID_4_agents_MT.sh
+
+# Run the MLP with capability-aware agents (i.e. CA (MLP))
+# set capability_aware = True and agent_id = False
+bash run_MLP_CA_4_agents_MT.sh
+
+# Run the MLP with agent IDs (i.e. ID (MLP))
+# set capability_aware = False and agent_id = True
+bash run_MLP_ID_4_agents_MT.sh
+```
+### Saving the Models
+Each model will save 3 seeds (although extra seeds can be added). Checkpoint models and training metrics will be saved in the `/results` directory. 
 
 TODO: Finish this section!
-
 
 ## Heterogeneous Sensor Network Environment (HSN)
 
